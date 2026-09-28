@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CivicFlow — Your path through government, made simple</title>
+<style>
+:root{
+  --bg:#f7f8fa;--card:#ffffff;--text:#12203a;--sub:#5a6b85;--border:#e3e7ee;
+  --primary:#2455e6;--primary-d:#1a3fb8;--success:#3b8a5e;--warn:#c58a1f;--danger:#c0392b;--grey:#8b93a3;
+  --shadow:0 1px 3px rgba(20,30,60,.06),0 1px 2px rgba(20,30,60,.04);
+}
+:root[data-theme="dark"]{
+  --bg:#0f1420;--card:#161d2c;--text:#e7ecf5;--sub:#93a0bb;--border:#262f42;
+  --primary:#5b83f5;--primary-d:#4568d8;--success:#4caf7d;--warn:#d7a53a;--danger:#e05a4a;--grey:#6d7890;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.container{max-width:1120px;margin:0 auto;padding:0 20px}
+header.nav{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--border);z-index:50;
+  padding-top:env(safe-area-inset-top,0px)}
+.navrow{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.logo{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
+.logo .dot{width:8px;height:8px;background:var(--primary);border-radius:50%}
+.navlinks{display:flex;gap:22px;font-size:14px;font-weight:500;color:var(--sub)}
+.navlinks a.active{color:var(--text)}
+.navlinks a:hover{color:var(--text)}
+.navright{display:flex;align-items:center;gap:12px;font-size:13px}
+.pill{border:1px solid var(--border);border-radius:20px;padding:6px 12px;background:var(--bg);font-size:13px;color:var(--sub)}
+.iconbtn{border:1px solid var(--border);background:var(--card);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.hambtn{display:none}
+@media(max-width:820px){.navlinks{display:none}.hambtn{display:flex}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.btn{border-radius:10px;padding:12px 20px;font-weight:600;font-size:14px;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-d)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary)}
+.section{padding:56px 0}
+.h1{font-size:38px;line-height:1.15;font-weight:700;margin:0 0 12px}
+.h2{font-size:26px;font-weight:700;margin:0 0 6px}
+.sub{color:var(--sub);font-size:15px;line-height:1.55}
+.grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.h1{font-size:28px}}
+.catcard{padding:18px;cursor:pointer;transition:transform .12s,border-color .12s}
+.catcard:hover{transform:translateY(-2px);border-color:var(--primary)}
+.svc-card{padding:18px;display:flex;flex-direction:column;gap:8px;cursor:pointer}
+.svc-card:hover{border-color:var(--primary)}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--bg);color:var(--sub);border:1px solid var(--border)}
+.badge-ok{color:var(--success);font-size:12px;font-weight:600}
+.searchbox{display:flex;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;box-shadow:var(--shadow)}
+.searchbox input{flex:1;border:none;background:transparent;font-size:15px;padding:10px 12px;color:var(--text);outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:12px;border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--sub);cursor:pointer}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.flowcol{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{width:100%;max-width:420px;padding:14px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);margin:6px 0;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.node:hover{border-color:var(--primary)}
+.node .st{width:10px;height:10px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.arrow{color:var(--grey);font-size:18px;margin:-2px 0}
+.drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;background:var(--card);border-left:1px solid var(--border);
+  box-shadow:-4px 0 18px rgba(0,0,0,.15);transform:translateX(105%);transition:transform .25s;z-index:200;overflow-y:auto;
+  padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.drawer.open{transform:translateX(0)}
+.overlay{position:fixed;inset:0;background:rgba(10,15,25,.35);z-index:150;display:none}
+.overlay.open{display:block}
+.filtergroup{margin-bottom:18px}
+.filtergroup h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);margin:0 0 8px}
+select,.fbtn{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+.fbtn.active{border-color:var(--primary);color:var(--primary);background:transparent}
+.progressbar{height:8px;border-radius:5px;background:var(--bg);overflow:hidden;border:1px solid var(--border)}
+.progressbar>div{height:100%;background:var(--success)}
+.assistant-fab{position:fixed;bottom:22px;right:22px;z-index:120;background:var(--primary);color:#fff;border:none;border-radius:26px;
+  padding:14px 18px;font-weight:600;box-shadow:0 6px 20px rgba(36,85,230,.35);display:flex;gap:8px;align-items:center}
+.assistant-panel{position:fixed;bottom:0;right:0;width:380px;max-width:94vw;height:520px;max-height:80vh;background:var(--card);
+  border:1px solid var(--border);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);z-index:130;
+  display:none;flex-direction:column;overflow:hidden}
+.assistant-panel.open{display:flex}
+.msg{padding:9px 13px;border-radius:12px;font-size:13.5px;max-width:85%;line-height:1.45}
+.msg.bot{background:var(--bg);align-self:flex-start}
+.msg.user{background:var(--primary);color:#fff;align-self:flex-end}
+.footer{border-top:1px solid var(--border);padding:26px 0;color:var(--sub);font-size:13px}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ---------- AUTH ---------- */
+.authwrap{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.authside{background:linear-gradient(160deg,#1a3fb8,#2455e6 60%,#4a78f0);color:#fff;padding:56px 48px;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.authside .h1{font-size:34px;color:#fff}
+.authside p{color:rgba(255,255,255,.85);font-size:15px;line-height:1.6;margin:0;max-width:440px}
+.authside ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:rgba(255,255,255,.92)}
+.authmain{display:flex;align-items:center;justify-content:center;padding:32px 20px;position:relative}
+.authcard{width:100%;max-width:410px;padding:28px}
+.auththeme{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px}
+.tabs{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:4px;margin:16px 0 18px}
+.tabs a{flex:1;text-align:center;padding:9px;border-radius:8px;font-size:14px;font-weight:600;color:var(--sub)}
+.tabs a.on{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.field input[type=text],.field input[type=email],.field input[type=password]{width:100%;font-size:15px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;font-family:inherit}
+.field input:focus{border-color:var(--primary)}
+.showpw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub);margin:-4px 0 14px;cursor:pointer}
+.err{color:var(--danger);font-size:13px;min-height:18px;margin-bottom:10px}
+.or{display:flex;align-items:center;gap:10px;color:var(--grey);font-size:12px;margin:16px 0}
+.or:before,.or:after{content:"";flex:1;height:1px;background:var(--border)}
+.userpill{display:flex;align-items:center;gap:6px}
+.logoutbtn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:0 12px;height:34px;font-size:13px;font-weight:600}
+.logoutbtn:hover{border-color:var(--danger);color:var(--danger)}
+@media(max-width:820px){.authwrap{grid-template-columns:1fr}.authside{padding:32px 24px}.authside .h1{font-size:26px}.authside ul{display:none}}
+@media(max-width:560px){.userpill .uname{display:none}}
+</style>
+</head>
+<body>
+<div id="overlay" class="overlay" onclick="closeDrawer()"></div>
+<div id="app"></div>
+<button class="assistant-fab" onclick="toggleAssistant()">💬 Civic Assistant</button>
+<div id="assistantPanel" class="assistant-panel"></div>
+<div id="drawer" class="drawer"></div>
+
+<script>
+/* ---------- DATA LAYER ---------- */
+const LOCATIONS = [
+  {city:'Mumbai',state:'Maharashtra'},
+  {city:'Ahmedabad',state:'Gujarat'},
+  {city:'Bengaluru',state:'Karnataka'}
+];
+const CATEGORIES = ['Business','Transport','Education','Property','Tax & Finance','Certificates','Health','Employment','Agriculture','Municipal Services'];
+
+// authority per state helper
+const AUTH = {
+  Maharashtra:{biz:'Maharashtra Directorate of Industries',food:'FDA Maharashtra & Municipal Corporation of Mumbai',rto:'Maharashtra Transport Department',local:'Municipal Corporation of Mumbai',tax:'Maharashtra GST Department'},
+  Gujarat:{biz:'Gujarat Industries Commissionerate',food:'FDCA Gujarat & Ahmedabad Municipal Corporation',rto:'Gujarat Transport Department',local:'Ahmedabad Municipal Corporation',tax:'Gujarat Commercial Tax Department'},
+  Karnataka:{biz:'Karnataka Udyog Mitra',food:'FSSAI Karnataka & BBMP',rto:'Karnataka Transport Department',local:'Bruhat Bengaluru Mahanagara Palike (BBMP)',tax:'Karnataka Commercial Taxes Department'}
+};
+
+function svcId(name,state){return (name+'-'+state).toLowerCase().replace(/[^a-z0-9]+/g,'-');}
+function makeService(o){o.id=svcId(o.name,o.state);o.slug=o.id;return o;}
+
+let SERVICES = [];
+LOCATIONS.forEach(loc=>{
+  const a = AUTH[loc.state];
+  SERVICES.push(makeService({name:'Business Registration',category:'Business',serviceType:'Registration',level:'State',state:loc.state,city:loc.city,
+    authority:a.biz,docs:['PAN Card','Address Proof','Identity Proof','Passport Photo'],prereqs:['Identity information'],dependencies:[],
+    fee:'₹500–₹2,000 (type-dependent)',online:true,sourceStatus:'verified',officialUrl:'https://www.startupindia.gov.in/',
+    desc:'Register a new business entity so it can legally operate, open a bank account, and apply for other licences.',
+    eligibility:'Any individual or group starting a proprietorship, partnership, or company.',userTypes:['Business Owner']}));
+  SERVICES.push(makeService({name:'Food Business Registration',category:'Business',serviceType:'Registration',level:'State',state:loc.state,city:loc.city,
+    authority:a.food,docs:['FSSAI Form-A/B','Business Registration Proof','ID Proof','Premises Proof'],prereqs:['Business Registration'],dependencies:['Local Premises Permission'],
+    fee:'₹100–₹7,500 depending on turnover',online:true,sourceStatus:'verified',officialUrl:'https://foscos.fssai.gov.in/',
+    desc:'Register a food business (restaurant, cloud kitchen, food stall) with the food safety authority.',
+    eligibility:'Anyone manufacturing, storing, transporting or selling food.',userTypes:['Business Owner']}));
+  SERVICES.push(makeService({name:'Driving Licence',category:'Transport',serviceType:'Licence',level:'State',state:loc.state,city:loc.city,
+    authority:a.rto,docs:['Age Proof','Address Proof','Passport Photo','Learner Licence'],prereqs:[],dependencies:[],
+    fee:'₹200–₹700',online:true,sourceStatus:'verified',officialUrl:'https://sarathi.parivahan.gov.in/',
+    desc:'Apply for a new driving licence or renew an existing one.',eligibility:'Indian resident, minimum age depending on vehicle class.',userTypes:['Individual']}));
+  SERVICES.push(makeService({name:'Birth Certificate',category:'Certificates',serviceType:'Certificate',level:'Municipal',state:loc.state,city:loc.city,
+    authority:a.local,docs:['Hospital Discharge Card','Parents ID Proof','Address Proof'],prereqs:[],dependencies:[],
+    fee:'₹0–₹100',online:true,sourceStatus:'verified',officialUrl:'https://crsorgi.gov.in/',
+    desc:'Obtain an official record of birth registration.',eligibility:'Parents or legal guardians of the child.',userTypes:['Parent','Individual']}));
+  SERVICES.push(makeService({name:'Property Tax Payment',category:'Property',serviceType:'Payment',level:'Municipal',state:loc.state,city:loc.city,
+    authority:a.local,docs:['Property ID / Survey Number','Previous Receipt'],prereqs:[],dependencies:[],
+    fee:'Varies by property',online:true,sourceStatus:'needs-verification',officialUrl:null,
+    desc:'Pay annual municipal property tax for a residential or commercial property.',eligibility:'Property owners within municipal limits.',userTypes:['Individual','Business Owner']}));
+  SERVICES.push(makeService({name:'Local Premises Permission',category:'Municipal Services',serviceType:'Permit',level:'Municipal',state:loc.state,city:loc.city,
+    authority:a.local,docs:['Property Ownership/Lease Proof','Layout Plan','Business Registration Proof'],prereqs:['Business Registration'],dependencies:[],
+    fee:'₹300–₹3,000',online:false,sourceStatus:'needs-verification',officialUrl:null,
+    desc:'Local municipal permission to operate a commercial premises at a given address.',eligibility:'Businesses operating from a physical premises.',userTypes:['Business Owner']}));
+});
+
+/* ---------- STATE ---------- */
+const state = {
+  theme: localStorage.getItem('cf_theme') || 'light',
+  location: JSON.parse(localStorage.getItem('cf_location') || 'null') || LOCATIONS[0],
+  saved: [],
+  progress: {}, // key: goal|state -> array of completed node ids (loaded per user)
+  user: null,
+  chat: []
+};
+function persist(){
+
+  localStorage.setItem(
+    'cf_theme',
+    state.theme
+  );
+
+  localStorage.setItem(
+    'cf_location',
+    JSON.stringify(state.location)
+  );
+
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function readJSON(k,fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
+
+/* ---------- AUTH (demo only: localStorage, no server) ---------- */
+
+const CFAuth = {
+
+  async signup(name, email, pw, pw2) {
+
+    name = name.trim();
+    email = email.trim().toLowerCase();
+
+    if (name.length < 2)
+      return 'Please enter your full name.';
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return 'Please enter a valid email address.';
+
+    if (pw.length < 6)
+      return 'Password must be at least 6 characters.';
+
+    if (pw !== pw2)
+      return 'Passwords do not match.';
+
+    try {
+
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: pw
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return data.message || 'Signup failed.';
+      }
+
+      localStorage.setItem('cf_token', data.token);
+
+      this.start(data.user);
+
+      await this.loadUserData();
+
+      return null;
+
+    } catch (error) {
+
+      console.error('Signup error:', error);
+
+      return 'Unable to connect to CivicFlow server.';
+
+    }
+  },
+
+
+  async login(email, pw) {
+
+    email = email.trim().toLowerCase();
+
+    if (!email || !pw)
+      return 'Enter your email and password.';
+
+    try {
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          email: email,
+          password: pw
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return data.message || 'Login failed.';
+      }
+
+      localStorage.setItem('cf_token', data.token);
+
+      this.start(data.user);
+
+      await this.loadUserData();
+
+      return null;
+
+    } catch (error) {
+
+      console.error('Login error:', error);
+
+      return 'Unable to connect to CivicFlow server.';
+
+    }
+  },
+
+
+  async restore() {
+
+    const token = localStorage.getItem('cf_token');
+
+    if (!token) {
+      return;
+    }
+
+    try {
+
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+
+        localStorage.removeItem('cf_token');
+
+        return;
+      }
+
+      const data = await response.json();
+
+      this.start(data.user);
+
+      await this.loadUserData();
+
+    } catch (error) {
+
+      console.error('Session restore error:', error);
+
+    }
+  },
+
+
+  async loadUserData() {
+
+    if (!state.user || state.user.guest) {
+      state.saved = [];
+      state.progress = {};
+      return;
+    }
+
+    const token =
+      localStorage.getItem('cf_token');
+
+    if (!token) return;
+
+
+    // Load saved services
+    try {
+
+      const savedResponse =
+        await fetch('/api/saved', {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        });
+
+      if (savedResponse.ok) {
+
+        state.saved =
+          await savedResponse.json();
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Could not load saved services:',
+        error
+      );
+
+    }
+
+
+    // Load CivicPath progress
+    try {
+
+      const progressResponse =
+        await fetch('/api/progress', {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        });
+
+      if (progressResponse.ok) {
+
+        const progress =
+          await progressResponse.json();
+
+        state.progress = {};
+
+        progress.forEach(item => {
+
+          const key =
+            item.goal + '|' + item.state;
+
+          if (!state.progress[key]) {
+            state.progress[key] = [];
+          }
+
+          if (
+            !state.progress[key]
+              .includes(item.step_id)
+          ) {
+
+            state.progress[key].push(
+              item.step_id
+            );
+
+          }
+
+        });
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Could not load progress:',
+        error
+      );
+
+    }
+
+  },
+
+
+  start(user) {
+
+    state.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email || '',
+      guest: !!user.guest
+    };
+
+    state.chat = [];
+
+  },
+
+
+  guest() {
+
+    this.start({
+      id: 'guest',
+      name: 'Guest',
+      email: '',
+      guest: true
+    });
+
+  },
+
+
+  logout() {
+
+    localStorage.removeItem('cf_token');
+
+    state.user = null;
+    state.saved = [];
+    state.progress = {};
+    state.chat = [];
+
+    const p =
+      document.getElementById(
+        'assistantPanel'
+      );
+
+    if (p) {
+      p.classList.remove('open');
+    }
+
+    closeDrawer();
+
+  }
+
+};
+async function submitAuth(e,mode){
+  e.preventDefault();
+  const f=e.target,err=document.getElementById('autherr'),btn=f.querySelector('button[type=submit]');
+  err.textContent='';btn.disabled=true;
+  let msg;
+  try{
+    if(mode==='signup') msg=await CFAuth.signup(f.elements['name'].value,f.elements['email'].value,f.elements['password'].value,f.elements['confirm'].value);
+    else msg=await CFAuth.login(f.elements['email'].value,f.elements['password'].value);
+  }catch(ex){msg='Something went wrong. Please try again.';}
+  btn.disabled=false;
+  if(msg){err.textContent=msg;return false;}
+  location.hash='/';render();
+  return false;
+}
+function guestLogin(){CFAuth.guest();location.hash='/';render();}
+function doLogout(){CFAuth.logout();location.hash='/login';render();}
+function togglePw(cb){document.querySelectorAll('#authform input[data-pw]').forEach(i=>i.type=cb.checked?'text':'password');}
+
+function authView(mode){
+  const login = mode==='login';
+  return `<div class="authwrap">
+    <div class="authside">
+      <div class="logo" style="color:#fff;font-size:20px"><span class="dot" style="background:#fff"></span>CivicFlow</div>
+      <div class="h1">Your path through government, made simple.</div>
+      <p>Discover the right service, understand the requirements and follow a personalised CivicPath to the official government portal.</p>
+      <ul><li>📍 Location-aware services and authorities</li><li>🧭 Step-by-step CivicPath with dependencies</li><li>★ Save services and track your progress</li></ul>
+    </div>
+    <div class="authmain">
+      <button class="iconbtn auththeme" onclick="toggleTheme()" aria-label="Toggle theme">${state.theme==='dark'?'◐':'☀'}</button>
+      <div class="card authcard">
+        <div class="h2" style="margin:0">${login?'Welcome back':'Create your account'}</div>
+        <div class="sub" style="font-size:14px">${login?'Log in to continue to CivicFlow.':'Sign up to save services and track your CivicPath.'}</div>
+        <div class="tabs"><a href="#/login" class="${login?'on':''}">Log in</a><a href="#/signup" class="${!login?'on':''}">Sign up</a></div>
+        <form id="authform" onsubmit="return submitAuth(event,'${mode}')" novalidate>
+          ${login?'':`<div class="field"><label for="f_name">Full name</label><input id="f_name" name="name" type="text" autocomplete="name" placeholder="Your name"></div>`}
+          <div class="field"><label for="f_email">Email</label><input id="f_email" name="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
+          <div class="field"><label for="f_pw">Password</label><input id="f_pw" name="password" data-pw type="password" autocomplete="${login?'current-password':'new-password'}" placeholder="${login?'Your password':'At least 6 characters'}"></div>
+          ${login?'':`<div class="field"><label for="f_pw2">Confirm password</label><input id="f_pw2" name="confirm" data-pw type="password" autocomplete="new-password" placeholder="Re-enter password"></div>`}
+          <label class="showpw"><input type="checkbox" onchange="togglePw(this)"> Show password</label>
+          <div id="autherr" class="err" role="alert"></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">${login?'Log in':'Create account'}</button>
+        </form>
+        <div class="or">or</div>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="guestLogin()">Continue as guest</button>
+        <p class="sub" style="font-size:12px;margin:14px 0 0">
+Your account is securely connected to CivicFlow.
+</p>
+      </div>
+    </div>
+  </div>`;
+}
+document.documentElement.setAttribute('data-theme', state.theme);
+function toggleTheme(){state.theme = state.theme==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',state.theme);persist();render();}
+function setLocation(loc){state.location=loc;persist();render();}
+
+/* ---------- CIVICPATH ENGINE ---------- */
+function buildCivicPath(goalKey, loc){
+  const a = AUTH[loc.state];
+  const key = state.progress[goalKey+'|'+loc.state] || [];
+  const templates = {
+    'food-business':[
+      {id:'identity',title:'Identity Information',why:'Confirms who is applying, required for every downstream step.',authority:'—',docs:['ID Proof','Address Proof'],officialUrl:null,alwaysComplete:true},
+      {id:'bizreg',title:'Business Registration',why:'Legally establishes the business entity before any activity-specific licence can be issued.',authority:a.biz,docs:['PAN Card','ID Proof','Address Proof'],officialUrl:'https://www.startupindia.gov.in/'},
+      {id:'localperm',title:'Local Premises Permission',why:'Required by the municipal authority before food operations begin at a physical premises. Depends on Business Registration.',authority:a.local,docs:['Premises Proof','Layout Plan'],officialUrl:null,requires:'bizreg'},
+      {id:'foodreg',title:'Food Business Registration',why:'Activity-specific registration with the food safety authority — conditional on premises type and turnover.',authority:a.food,docs:['FSSAI Form-A/B','Premises Proof'],officialUrl:'https://foscos.fssai.gov.in/',requires:'bizreg',conditional:true},
+      {id:'compliance',title:'Ongoing Compliance',why:'Periodic renewals and inspections once the business is operational.',authority:a.food,docs:['Renewal Form'],officialUrl:null,requires:'foodreg',upcoming:true}
+    ],
+    'business-registration':[
+      {id:'identity',title:'Identity Information',why:'Confirms who is applying.',authority:'—',docs:['ID Proof'],officialUrl:null,alwaysComplete:true},
+      {id:'bizreg',title:'Business Registration',why:'Core registration step for the chosen business type.',authority:a.biz,docs:['PAN Card','ID Proof'],officialUrl:'https://www.startupindia.gov.in/'},
+      {id:'tax',title:'Tax Registration (GST)',why:'Needed once turnover crosses the GST threshold — conditional on business circumstances.',authority:a.tax,docs:['Business Registration Proof'],officialUrl:null,requires:'bizreg',conditional:true},
+      {id:'localperm',title:'Local Permission',why:'Municipal permission for operating premises.',authority:a.local,docs:['Premises Proof'],officialUrl:null,requires:'bizreg',upcoming:true}
+    ]
+  };
+  const nodes = (templates[goalKey]||templates['business-registration']).map(n=>{
+    let status;
+    if(n.alwaysComplete) status='COMPLETED';
+    else if(key.includes(n.id)) status='COMPLETED';
+    else if(n.requires && !key.includes(n.requires) && !templates[goalKey].find(x=>x.id===n.requires)?.alwaysComplete && n.requires!=='identity') status='BLOCKED';
+    else if(n.upcoming) status='UPCOMING';
+    else if(n.conditional) status='CONDITIONAL';
+    else status='AVAILABLE';
+    // identity always satisfies requires
+    if(n.requires==='identity') status = key.includes(n.id)?'COMPLETED': (n.conditional?'CONDITIONAL': n.upcoming?'UPCOMING':'AVAILABLE');
+    else if(n.requires && n.requires!=='identity'){
+      const reqDone = key.includes(n.requires);
+      if(!reqDone) status='BLOCKED';
+      else if(key.includes(n.id)) status='COMPLETED';
+      else status = n.conditional?'CONDITIONAL':(n.upcoming?'UPCOMING':'AVAILABLE');
+    }
+    return {...n,status};
+  });
+  return nodes;
+}
+const STATUS_COLOR = {COMPLETED:'var(--success)',AVAILABLE:'var(--primary)',BLOCKED:'var(--danger)',CONDITIONAL:'var(--warn)',UPCOMING:'var(--grey)'};
+const STATUS_ICON = {COMPLETED:'✓',AVAILABLE:'→',BLOCKED:'🔒',CONDITIONAL:'❖',UPCOMING:'⏳'};
+
+/* ---------- ROUTER ---------- */
+function navigate(hash){location.hash=hash;}
+window.addEventListener('hashchange',render);
+function currentRoute(){
+  const h = location.hash.slice(1) || '/';
+  const [path,qs] = h.split('?');
+  const params = new URLSearchParams(qs||'');
+  return {path,params};
+}
+
+function layout(content){
+  const {path} = currentRoute();
+  const nav=(href,label)=>`<a href="#${href}" class="${path===href?'active':''}">${label}</a>`;
+  return `
+  <header class="nav"><div class="container navrow">
+    <div class="logo"><span class="dot"></span>CivicFlow</div>
+    <nav class="navlinks">${nav('/','Home')}${nav('/explore','Explore Services')}${nav('/civicpath','My CivicPath')}${nav('/dashboard','Dashboard')}${nav('/saved','Saved')}${nav('/about','About')}</nav>
+    <div class="navright">
+      <div class="pill">📍 ${state.location.city}, ${state.location.state}
+        <select onchange="setLocation(LOCATIONS[this.value])" style="border:none;background:transparent;color:var(--sub);font-size:12px;margin-left:4px">
+          ${LOCATIONS.map((l,i)=>`<option value="${i}" ${l.city===state.location.city?'selected':''}>${l.city}</option>`).join('')}
+        </select>
+      </div>
+      <button class="iconbtn hambtn" onclick="alert('Menu: Home, Explore, CivicPath, Dashboard, Saved, About')">☰</button>
+      <button class="iconbtn" onclick="toggleTheme()">${state.theme==='dark'?'◐':'☀'}</button>
+      ${state.user?`<div class="userpill"><span class="pill" title="${esc(state.user.email||'Guest session')}">👤 <span class="uname">${esc(state.user.name)}</span></span><button class="logoutbtn" onclick="doLogout()">Log out</button></div>`:''}
+    </div>
+  </div></header>
+  <main>${content}</main>
+  <footer class="footer"><div class="container">CivicFlow is an independent civic-tech navigation platform. It does not represent or replace any government department. Official portals remain the final authority. · <a href="#/about">About</a></div></footer>
+  `;
+}
+
+function serviceCard(s){
+  return `<div class="card svc-card" onclick="navigate('/services/${s.id}')">
+    <div style="display:flex;justify-content:space-between"><strong>${s.name}</strong><span class="tag">${s.level}</span></div>
+    <div class="sub" style="font-size:13px">${s.category} · ${s.city}, ${s.state}</div>
+    <div style="display:flex;gap:8px;align-items:center;font-size:12px">
+      <span class="tag">${s.online?'Online':'Offline'}</span>
+      <span class="${s.sourceStatus==='verified'?'badge-ok':''}" style="color:${s.sourceStatus==='verified'?'var(--success)':'var(--warn)'};font-weight:600">${s.sourceStatus==='verified'?'✓ Official source':'⚠ Needs verification'}</span>
+    </div>
+    <button class="btn btn-outline" style="align-self:flex-start;margin-top:4px" onclick="event.stopPropagation();navigate('/services/${s.id}')">View Service</button>
+  </div>`;
+}
+
+function homeView(){
+  const popular = SERVICES.filter(s=>s.city===state.location.city).slice(0,6);
+  return layout(`
+  <section class="section"><div class="container">
+    <div class="h1">Government services,<br>without the confusion.</div>
+    <p class="sub" style="max-width:560px">Tell us what you want to accomplish. CivicFlow helps you discover the right service, understand the requirements and follow your personalized path to the official government portal.</p>
+    <div class="searchbox" style="max-width:640px;margin-top:20px">
+      <input id="homesearch" placeholder="What are you trying to get done?" onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="btn btn-primary" onclick="doSearch()">BUILD MY CIVICPATH</button>
+    </div>
+    <div class="chips">
+      ${['Register a small business','Start a food business','Apply for a driving licence','Get a birth certificate','Pay property tax'].map(c=>`<span class="chip" onclick="document.getElementById('homesearch').value='${c}';doSearch()">${c}</span>`).join('')}
+    </div>
+    <div style="margin-top:16px"><button class="btn btn-outline" onclick="navigate('/explore')">EXPLORE SERVICES</button></div>
+  </div></section>
+
+  <section class="section" style="padding-top:0"><div class="container">
+    <div class="h2">Browse by category</div>
+    <div class="grid grid-4" style="margin-top:16px">
+      ${CATEGORIES.slice(0,8).map(c=>`<div class="card catcard" onclick="navigate('/explore?category=${encodeURIComponent(c)}')"><strong>${c}</strong></div>`).join('')}
+    </div>
+  </div></section>
+
+  <section class="section" style="padding-top:0"><div class="container">
+    <div class="h2">Popular services in ${state.location.city}</div>
+    <div class="grid grid-3" style="margin-top:16px">${popular.map(serviceCard).join('')}</div>
+  </div></section>
+
+  <section class="section" style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)"><div class="container">
+    <div class="h2">CivicPath™</div>
+    <p class="sub">Not just a government directory.</p>
+    <div class="grid grid-2" style="margin-top:20px">
+      <div class="card" style="padding:20px">
+        <strong style="color:var(--sub)">TRADITIONAL</strong>
+        <div class="sub" style="margin-top:8px;line-height:2.1">Search ↓<br>Multiple websites ↓<br>Find department ↓<br>Understand requirements ↓<br>Figure out dependencies ↓<br>Apply</div>
+      </div>
+      <div class="card" style="padding:20px;border-color:var(--primary)">
+        <strong style="color:var(--primary)">CIVICFLOW</strong>
+        <div class="sub" style="margin-top:8px;line-height:2.1;color:var(--text)">Your goal ↓<br>Location ↓<br>Applicable service ↓<br>Dependencies ↓<br>Personalized CivicPath ↓<br>Official portal</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:20px" onclick="navigate('/civicpath?goal=food-business')">See how CivicPath works</button>
+  </div></section>
+
+  <section class="section"><div class="container">
+    <div class="h2">SAME GOAL. DIFFERENT CIVIC PATH.</div>
+    <p class="sub">Goal: “I want to start a food business.” Change the location below — watch the authority and requirements change.</p>
+    <div style="display:flex;gap:8px;margin:14px 0">
+      ${LOCATIONS.map((l,i)=>`<button class="fbtn ${l.city===state.location.city?'active':''}" onclick="setLocation(LOCATIONS[${i}])">${l.city}, ${l.state}</button>`).join('')}
+    </div>
+    <div id="demoPath"></div>
+  </div></section>
+  `);
+}
+
+function doSearch(){
+  const q = document.getElementById('homesearch').value;
+  navigate('/explore?q='+encodeURIComponent(q));
+}
+
+function matchService(q,s){
+  q=q.toLowerCase();
+  const hay = (s.name+' '+s.category+' '+s.desc).toLowerCase();
+  if(hay.includes(q))return true;
+  if(q.includes('food')||q.includes('restaurant'))return s.name.includes('Food');
+  if(q.includes('licence')||q.includes('license')||q.includes('drive'))return s.name.includes('Driving');
+  if(q.includes('birth')||q.includes('proof of birth'))return s.name.includes('Birth');
+  if(q.includes('business')&&!q.includes('food'))return s.name.includes('Business Registration');
+  if(q.includes('tax'))return s.name.includes('Property Tax');
+  return false;
+}
+
+function exploreView(params){
+  const q = params.get('q')||'';
+  const cat = params.get('category')||'';
+  let results = SERVICES.filter(s=>s.city===state.location.city);
+  if(cat) results = results.filter(s=>s.category===cat);
+  if(q) results = results.filter(s=>matchService(q,s));
+  return layout(`
+  <section class="section"><div class="container">
+    <div class="h2">Explore Government Services</div>
+    <p class="sub">Find the service you need without knowing which department handles it.</p>
+    <div class="searchbox" style="max-width:560px;margin:16px 0">
+      <input id="exsearch" value="${q}" placeholder="Search services..." onkeydown="if(event.key==='Enter')navigate('/explore?q='+encodeURIComponent(this.value))">
+      <button class="btn btn-primary" onclick="navigate('/explore?q='+encodeURIComponent(document.getElementById('exsearch').value))">Search</button>
+    </div>
+    <div class="filtergroup"><h4>Category</h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="chip ${!cat?'active':''}" onclick="navigate('/explore')">All</span>
+        ${CATEGORIES.map(c=>`<span class="chip ${cat===c?'active':''}" onclick="navigate('/explore?category=${encodeURIComponent(c)}')">${c}</span>`).join('')}
+      </div>
+    </div>
+    <p class="sub"><strong>${results.length}</strong> service${results.length!==1?'s':''} found in ${state.location.city}, ${state.location.state}</p>
+    ${results.length? `<div class="grid grid-3">${results.map(serviceCard).join('')}</div>` :
+      `<div class="card" style="padding:30px;text-align:center"><strong>No services found.</strong><div class="sub">Try a different search or change your location.</div></div>`}
+  </div></section>`);
+}
+
+function serviceView(id){
+  const s = SERVICES.find(x=>x.id===id);
+  if(!s) return layout(`<div class="container section"><p>Service not found.</p></div>`);
+  const isSaved = state.saved.includes(s.id);
+  return layout(`
+  <div class="container section">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+      <div><div class="h2">${s.name}</div>
+      <p class="sub">${s.city}, ${s.state} · ${s.level} Service · ${s.authority}</p></div>
+      <span style="font-weight:600;font-size:13px;color:${s.sourceStatus==='verified'?'var(--success)':'var(--warn)'}">${s.sourceStatus==='verified'?'✓ VERIFIED OFFICIAL SOURCE':'⚠ NEEDS VERIFICATION'}</span>
+    </div>
+    <div class="grid" style="grid-template-columns:2fr 1fr;margin-top:20px;gap:20px" >
+      <div>
+        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Overview</strong><p class="sub">${s.desc}</p></div>
+        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Who is this for?</strong><p class="sub">${s.eligibility}</p></div>
+        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Documents Required</strong><ul class="sub">${s.docs.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+        <div class="card" style="padding:20px"><strong>Prerequisites & Dependencies</strong>
+          <p class="sub">${s.prereqs.length?'Prerequisites: '+s.prereqs.join(', '):'No prerequisites.'}</p>
+          <p class="sub">${s.dependencies.length?'Dependencies: '+s.dependencies.join(', '):'No further dependencies.'}</p></div>
+      </div>
+      <div>
+        <div class="card" style="padding:18px;margin-bottom:16px">
+          <div class="sub">Fees</div><strong>${s.fee}</strong>
+          <div class="sub" style="margin-top:10px">Last Verified</div><strong>${s.sourceStatus==='verified'?'Sept 2026':'Pending'}</strong>
+          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="navigate('/civicpath?goal=business-registration')">BUILD MY CIVICPATH</button>
+          ${s.officialUrl? `<a href="${s.officialUrl}" target="_blank"><button class="btn btn-outline" style="width:100%;margin-top:8px">OPEN OFFICIAL PORTAL ↗</button></a>`
+            : `<button class="btn btn-outline" style="width:100%;margin-top:8px" disabled title="Official portal link pending verification.">Official portal link pending verification</button>`}
+          <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="toggleSave('${s.id}')">${isSaved?'★ Saved (remove)':'☆ Save Service'}</button>
+        </div>
+      </div>
+    </div>
+  </div>`);
+}
+async function toggleSave(id){
+
+  if(!state.user || state.user.guest){
+
+    alert(
+      'Please create an account to save services.'
+    );
+
+    return;
+  }
+
+  const token =
+    localStorage.getItem('cf_token');
+
+  const alreadySaved =
+    state.saved.includes(id);
+
+
+  try {
+
+    if(alreadySaved){
+
+      const response =
+        await fetch(
+          `/api/saved/${encodeURIComponent(id)}`,
+          {
+            method: 'DELETE',
+
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      if(!response.ok){
+        alert('Could not remove saved service.');
+        return;
+      }
+
+      state.saved =
+        state.saved.filter(
+          x => x !== id
+        );
+
+    } else {
+
+      const response =
+        await fetch(
+          `/api/saved/${encodeURIComponent(id)}`,
+          {
+            method: 'POST',
+
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      if(!response.ok){
+        alert('Could not save service.');
+        return;
+      }
+
+      state.saved.push(id);
+
+    }
+
+    render();
+
+  } catch(error){
+
+    console.error(error);
+
+    alert(
+      'Unable to connect to server.'
+    );
+
+  }
+
+}
+function whatNowPanel(nodes,goalKey){
+  const avail = nodes.filter(n=>n.status==='AVAILABLE');
+  const blocked = nodes.filter(n=>n.status==='BLOCKED');
+  return `<div class="card" style="padding:20px;margin-bottom:20px;border-color:var(--primary)">
+    <strong>WHAT CAN I DO RIGHT NOW?</strong>
+    <p class="sub">${avail.length} action${avail.length!==1?'s':''} available now</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+      ${avail.map(n=>`<button class="btn btn-primary" onclick="markComplete('${goalKey}','${n.id}')">Start ${n.title}</button>`).join('') || '<span class="sub">No actions available yet — complete a prerequisite first.</span>'}
+    </div>
+    ${blocked.length?`<p class="sub" style="margin-top:10px"><strong>Blocked:</strong> ${blocked.map(n=>n.title+' — requires '+(nodes.find(x=>x.id===n.requires)?.title||'a prior step')).join('; ')}</p>`:''}
+  </div>`;
+}
+async function markComplete(goalKey,id){
+
+  if(!state.user || state.user.guest){
+
+    alert(
+      'Please login to track your CivicPath.'
+    );
+
+    return;
+  }
+
+  const token =
+    localStorage.getItem('cf_token');
+
+
+  try {
+
+    const response =
+      await fetch('/api/progress', {
+
+        method: 'POST',
+
+        headers: {
+
+          'Content-Type':
+            'application/json',
+
+          Authorization:
+            `Bearer ${token}`
+
+        },
+
+        body: JSON.stringify({
+
+          goal: goalKey,
+
+          stepId: id,
+
+          state:
+            state.location.state
+
+        })
+
+      });
+
+
+    if(!response.ok){
+
+      const data =
+        await response.json();
+
+      alert(
+        data.message ||
+        'Could not save progress.'
+      );
+
+      return;
+    }
+
+
+    await CFAuth.loadUserData();
+
+    render();
+
+
+  } catch(error){
+
+    console.error(error);
+
+    alert(
+      'Unable to connect to server.'
+    );
+
+  }
+
+}
+
+function civicPathView(params){
+  const goal = params.get('goal') || 'food-business';
+  const nodes = buildCivicPath(goal,state.location);
+  const done = nodes.filter(n=>n.status==='COMPLETED').length;
+  return layout(`
+  <div class="container section">
+    <div class="h2">Your CivicPath™</div>
+    <p class="sub">Your personalized path through government.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:10px 0 20px">
+      <span class="tag">Goal: ${goal==='food-business'?'Start a food business':'Business registration'}</span>
+      <span class="pill">📍 ${state.location.city}, ${state.location.state}
+        <select onchange="setLocation(LOCATIONS[this.value]);navigate('/civicpath?goal=${goal}')" style="border:none;background:transparent;color:var(--sub);font-size:12px">
+          ${LOCATIONS.map((l,i)=>`<option value="${i}" ${l.city===state.location.city?'selected':''}>${l.city}</option>`).join('')}
+        </select>
+      </span>
+      <span class="sub">${done}/${nodes.length} completed</span>
+    </div>
+    <div class="progressbar" style="margin-bottom:24px"><div style="width:${done/nodes.length*100}%"></div></div>
+    ${whatNowPanel(nodes,goal)}
+    <div class="flowcol">
+      ${nodes.map((n,i)=>`
+        <div class="node" onclick='openNode(${JSON.stringify(JSON.stringify(n))},"${goal}")'>
+          <span class="st" style="background:${STATUS_COLOR[n.status]}"></span>
+          <div><strong>${STATUS_ICON[n.status]} ${n.title}</strong><div class="sub" style="font-size:12px">${n.status}${n.status==='CONDITIONAL'?' — depends on your circumstances':''}</div></div>
+        </div>
+        ${i<nodes.length-1?'<div class="arrow">↓</div>':''}
+      `).join('')}
+    </div>
+  </div>`);
+}
+function openNode(nStr,goal){
+  const n = JSON.parse(nStr);
+  document.getElementById('drawer').innerHTML = `
+    <button class="iconbtn" onclick="closeDrawer()" style="float:right">✕</button>
+    <h3 style="margin-top:30px">${n.title}</h3>
+    <span class="tag" style="background:${STATUS_COLOR[n.status]}22;color:${STATUS_COLOR[n.status]};border-color:${STATUS_COLOR[n.status]}">${n.status}</span>
+    <p class="sub" style="margin-top:14px"><strong>Why it exists:</strong> ${n.why}</p>
+    ${n.requires?`<p class="sub"><strong>Prerequisite:</strong> ${n.requires}</p>`:''}
+    <p class="sub"><strong>Documents:</strong> ${n.docs.join(', ')}</p>
+    <p class="sub"><strong>Authority:</strong> ${n.authority}</p>
+    <p class="sub"><strong>Official source:</strong> ${n.officialUrl?`<a href="${n.officialUrl}" target="_blank" style="color:var(--primary)">Open portal ↗</a>`:'Pending verification'}</p>
+    ${n.status==='AVAILABLE'?`<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="markComplete('${goal}','${n.id}');closeDrawer()">Mark as complete</button>`:''}
+  `;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
+
+function dashboardView(){
+  const goals = [{key:'food-business',label:'Start a Food Business'},{key:'business-registration',label:'Business Registration'}];
+  return layout(`<div class="container section">
+    <div class="h2">Your Civic Journeys</div>
+    <div class="grid grid-2" style="margin-top:16px">
+      ${goals.map(g=>{
+        const nodes = buildCivicPath(g.key,state.location);
+        const done = nodes.filter(n=>n.status==='COMPLETED').length;
+        const next = nodes.find(n=>n.status==='AVAILABLE');
+        return `<div class="card" style="padding:20px">
+          <strong>${g.label}</strong><div class="sub">${state.location.city}, ${state.location.state}</div>
+          <div class="progressbar" style="margin:10px 0"><div style="width:${done/nodes.length*100}%"></div></div>
+          <div class="sub">${done}/${nodes.length} steps completed</div>
+          ${next?`<div class="sub">Next: ${next.title}</div>`:''}
+          <button class="btn btn-outline" style="margin-top:10px" onclick="navigate('/civicpath?goal=${g.key}')">Continue CivicPath</button>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="h2" style="margin-top:30px">Saved Services</div>
+    ${state.saved.length?`<div class="grid grid-3" style="margin-top:16px">${state.saved.map(id=>SERVICES.find(s=>s.id===id)).filter(Boolean).map(serviceCard).join('')}</div>`
+      :`<p class="sub">You haven't saved any services yet.</p>`}
+  </div>`);
+}
+function savedView(){
+  return layout(`<div class="container section"><div class="h2">Saved Services</div>
+    ${state.saved.length? `<div class="grid grid-3" style="margin-top:16px">${state.saved.map(id=>SERVICES.find(s=>s.id===id)).filter(Boolean).map(serviceCard).join('')}</div>`
+      : `<p class="sub">You haven't saved any services yet. <a href="#/explore" style="color:var(--primary)">Explore services →</a></p>`}
+  </div>`);
+}
+function aboutView(){
+  return layout(`<div class="container section" style="max-width:760px">
+    <div class="h2">About CivicFlow</div>
+    <p class="sub">CivicFlow is an independent civic-tech navigation platform. Whenever a citizen wants to perform a government-related activity, CivicFlow helps them understand what to do, who handles it, and where the official application lives — instead of searching disconnected government websites.</p>
+    <p class="sub"><strong>CivicPath™</strong> is a personalized, location-aware sequence of steps generated from your goal, your jurisdiction, and dependencies between steps — not a static checklist. The same goal produces a different path in a different state, because authorities, requirements and portals differ by jurisdiction.</p>
+    <p class="sub"><strong>Disclaimer:</strong> CivicFlow does not represent or replace any government department. Official government portals remain the final authority for applications, fees, eligibility, requirements and decisions.</p>
+  </div>`);
+}
+
+/* ---------- ASSISTANT ---------- */
+function toggleAssistant(){
+  const p = document.getElementById('assistantPanel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) renderAssistant();
+}
+function renderAssistant(){
+  const p = document.getElementById('assistantPanel');
+  p.innerHTML = `
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+    <div><strong>Civic Assistant</strong><div class="sub" style="font-size:12px">Here to help you navigate.</div></div>
+    <button class="iconbtn" onclick="toggleAssistant()">✕</button>
+  </div>
+  <div id="chatlog" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px">${state.chat.map(m=>`<div class="msg ${m.role}">${m.text}</div>`).join('') || '<div class="sub" style="font-size:13px">Ask about your current CivicPath, or tap a suggestion below.</div>'}</div>
+  <div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">
+    ${['What should I do first?','Why is this blocked?','What documents do I need?','Where do I apply?'].map(q=>`<span class="chip" onclick="askAssistant('${q}')">${q}</span>`).join('')}
+  </div>
+  <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
+    <input id="chatinput" placeholder="Type a question..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--bg);color:var(--text)" onkeydown="if(event.key==='Enter'){askAssistant(this.value);this.value=''}">
+    <button class="btn btn-primary" onclick="const i=document.getElementById('chatinput');askAssistant(i.value);i.value=''">Send</button>
+  </div>`;
+}
+function askAssistant(q){
+  if(!q) return;
+  state.chat.push({role:'user',text:q});
+  const goal='food-business';
+  const nodes = buildCivicPath(goal,state.location);
+  const avail = nodes.filter(n=>n.status==='AVAILABLE');
+  const blocked = nodes.find(n=>n.status==='BLOCKED');
+  let ans;
+  const ql = q.toLowerCase();
+  if(ql.includes('first')||ql.includes('right now')){
+    ans = avail.length? `You currently have ${avail.length} action(s) available: ${avail.map(n=>n.title).join(', ')}. <a href="#/civicpath?goal=${goal}" onclick="toggleAssistant()" style="color:var(--primary)">Open CivicPath</a>` : `Nothing is available yet — check your CivicPath for the current step.`;
+  } else if(ql.includes('block')){
+    ans = blocked? `${blocked.title} is blocked because it requires ${nodes.find(x=>x.id===blocked.requires)?.title} first. <a href="#/civicpath?goal=${goal}" onclick="toggleAssistant()" style="color:var(--primary)">View prerequisite</a>` : `Nothing appears blocked on your current CivicPath.`;
+  } else if(ql.includes('document')){
+    ans = `Documents vary per step — open a step on your CivicPath to see its exact document list. For Business Registration you'll typically need PAN Card, ID Proof and Address Proof.`;
+  } else if(ql.includes('where')||ql.includes('apply')||ql.includes('portal')){
+    ans = `Applications happen on the official government portal linked from each step or service page — CivicFlow never collects applications itself.`;
+  } else {
+    ans = `I don't have enough verified information to answer that. Please check the official source associated with this service.`;
+  }
+  state.chat.push({role:'bot',text:ans});
+  renderAssistant();
+  setTimeout(()=>{const l=document.getElementById('chatlog');if(l)l.scrollTop=l.scrollHeight;},50);
+}
+
+/* ---------- RENDER / ROUTER DISPATCH ---------- */
+function render(){
+  const {path,params} = currentRoute();
+  const fab = document.querySelector('.assistant-fab');
+  const isAuthRoute = path==='/login'||path==='/signup';
+  if(!state.user && !isAuthRoute){location.hash='/login';return;}   // hashchange re-renders
+  if(state.user && isAuthRoute){location.hash='/';return;}
+  if(fab) fab.style.display = state.user ? '' : 'none';
+  let html;
+  if(isAuthRoute){
+    document.getElementById('app').innerHTML = authView(path==='/signup'?'signup':'login');
+    document.title = (path==='/signup'?'Sign up':'Log in')+' — CivicFlow';
+    return;
+  }
+  document.title = 'CivicFlow — Your path through government, made simple';
+  if(path==='/'||path==='') html = homeView();
+  else if(path==='/explore') html = exploreView(params);
+  else if(path.startsWith('/services/')) html = serviceView(path.split('/services/')[1]);
+  else if(path==='/civicpath') html = civicPathView(params);
+  else if(path==='/dashboard') html = dashboardView();
+  else if(path==='/saved') html = savedView();
+  else if(path==='/about') html = aboutView();
+  else html = layout(`<div class="container section"><p class="sub">Page not found.</p><a href="#/" style="color:var(--primary)">Go home</a></div>`);
+  document.getElementById('app').innerHTML = html;
+  if(path==='/'||path==='') renderDemoPath();
+}
+function renderDemoPath(){
+  const nodes = buildCivicPath('food-business',state.location);
+  const el = document.getElementById('demoPath');
+  if(!el) return;
+  el.innerHTML = `<div class="grid grid-3">${nodes.slice(0,3).map(n=>`
+    <div class="card" style="padding:14px">
+      <span class="tag" style="border-color:${STATUS_COLOR[n.status]};color:${STATUS_COLOR[n.status]}">${n.status}</span>
+      <div style="margin-top:8px"><strong>${n.title}</strong></div>
+      <div class="sub" style="font-size:12px">${n.authority}</div>
+    </div>`).join('')}</div>`;
+}
+CFAuth.restore().then(() => {
+  render();
+});
+</script>
+</body>
+</html>
