@@ -1,1109 +1,1645 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CivicFlow — Your path through government, made simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CivicFlow — Navigate Government Services</title>
 <style>
-:root{
-  --bg:#f7f8fa;--card:#ffffff;--text:#12203a;--sub:#5a6b85;--border:#e3e7ee;
-  --primary:#2455e6;--primary-d:#1a3fb8;--success:#3b8a5e;--warn:#c58a1f;--danger:#c0392b;--grey:#8b93a3;
-  --shadow:0 1px 3px rgba(20,30,60,.06),0 1px 2px rgba(20,30,60,.04);
+/* ── CSS Variables ── */
+:root {
+  --bg: #f8f9fa;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --sub: #6c757d;
+  --border: #dee2e6;
+  --primary: #4361ee;
+  --primary-light: #eef0fd;
+  --success: #2dc653;
+  --success-light: #eafaf0;
+  --warn: #f4a261;
+  --warn-light: #fef5ea;
+  --danger: #e63946;
+  --danger-light: #fdecea;
+  --shadow: 0 2px 8px rgba(0,0,0,.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.2s ease;
 }
-:root[data-theme="dark"]{
-  --bg:#0f1420;--card:#161d2c;--text:#e7ecf5;--sub:#93a0bb;--border:#262f42;
-  --primary:#5b83f5;--primary-d:#4568d8;--success:#4caf7d;--warn:#d7a53a;--danger:#e05a4a;--grey:#6d7890;
-  --shadow:0 1px 3px rgba(0,0,0,.4);
+[data-theme="dark"] {
+  --bg: #0f0f1a;
+  --card: #1a1a2e;
+  --text: #e8e8f0;
+  --sub: #888899;
+  --border: #2a2a3e;
+  --primary-light: #1e2240;
+  --success-light: #0f2218;
+  --warn-light: #2a1e0a;
+  --danger-light: #2a0f11;
+  --shadow: 0 2px 8px rgba(0,0,0,.3);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer}
-.container{max-width:1120px;margin:0 auto;padding:0 20px}
-header.nav{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--border);z-index:50;
-  padding-top:env(safe-area-inset-top,0px)}
-.navrow{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
-.logo{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
-.logo .dot{width:8px;height:8px;background:var(--primary);border-radius:50%}
-.navlinks{display:flex;gap:22px;font-size:14px;font-weight:500;color:var(--sub)}
-.navlinks a.active{color:var(--text)}
-.navlinks a:hover{color:var(--text)}
-.navright{display:flex;align-items:center;gap:12px;font-size:13px}
-.pill{border:1px solid var(--border);border-radius:20px;padding:6px 12px;background:var(--bg);font-size:13px;color:var(--sub)}
-.iconbtn{border:1px solid var(--border);background:var(--card);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px}
-.hambtn{display:none}
-@media(max-width:820px){.navlinks{display:none}.hambtn{display:flex}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
-.btn{border-radius:10px;padding:12px 20px;font-weight:600;font-size:14px;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px}
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background var(--transition),color var(--transition)}
+a{color:var(--primary);text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+input,textarea,select{font-family:inherit}
+/* ── Utility ── */
+.hidden{display:none!important}
+.flex{display:flex}
+.flex-col{display:flex;flex-direction:column}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.gap-2{gap:.5rem}
+.gap-3{gap:.75rem}
+.gap-4{gap:1rem}
+.gap-6{gap:1.5rem}
+.mt-1{margin-top:.25rem}
+.mt-2{margin-top:.5rem}
+.mt-4{margin-top:1rem}
+.mt-6{margin-top:1.5rem}
+.text-sm{font-size:.875rem}
+.text-xs{font-size:.75rem}
+.text-lg{font-size:1.125rem}
+.text-xl{font-size:1.25rem}
+.font-bold{font-weight:700}
+.font-semibold{font-weight:600}
+.text-sub{color:var(--sub)}
+.text-primary{color:var(--primary)}
+.text-success{color:var(--success)}
+.text-warn{color:var(--warn)}
+.text-danger{color:var(--danger)}
+.rounded{border-radius:var(--radius-sm)}
+.rounded-lg{border-radius:var(--radius)}
+.w-full{width:100%}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ── Spinner ── */
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Badge ── */
+.badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge-success{background:var(--success-light);color:var(--success)}
+.badge-warn{background:var(--warn-light);color:#c07a2a}
+.badge-danger{background:var(--danger-light);color:var(--danger)}
+.badge-primary{background:var(--primary-light);color:var(--primary)}
+.badge-sub{background:var(--bg);color:var(--sub);border:1px solid var(--border)}
+/* ── Btn ── */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;transition:opacity var(--transition),transform var(--transition)}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
 .btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-d)}
-.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
-.btn-outline:hover{border-color:var(--primary)}
-.section{padding:56px 0}
-.h1{font-size:38px;line-height:1.15;font-weight:700;margin:0 0 12px}
-.h2{font-size:26px;font-weight:700;margin:0 0 6px}
-.sub{color:var(--sub);font-size:15px;line-height:1.55}
-.grid{display:grid;gap:16px}
-.grid-4{grid-template-columns:repeat(4,1fr)}
-.grid-3{grid-template-columns:repeat(3,1fr)}
-.grid-2{grid-template-columns:repeat(2,1fr)}
-@media(max-width:820px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.h1{font-size:28px}}
-.catcard{padding:18px;cursor:pointer;transition:transform .12s,border-color .12s}
-.catcard:hover{transform:translateY(-2px);border-color:var(--primary)}
-.svc-card{padding:18px;display:flex;flex-direction:column;gap:8px;cursor:pointer}
-.svc-card:hover{border-color:var(--primary)}
-.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--bg);color:var(--sub);border:1px solid var(--border)}
-.badge-ok{color:var(--success);font-size:12px;font-weight:600}
-.searchbox{display:flex;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;box-shadow:var(--shadow)}
-.searchbox input{flex:1;border:none;background:transparent;font-size:15px;padding:10px 12px;color:var(--text);outline:none}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.chip{font-size:12px;border:1px solid var(--border);border-radius:20px;padding:6px 12px;color:var(--sub);cursor:pointer}
-.chip:hover{border-color:var(--primary);color:var(--primary)}
-.flowcol{display:flex;flex-direction:column;align-items:center;gap:0}
-.node{width:100%;max-width:420px;padding:14px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);margin:6px 0;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
-.node:hover{border-color:var(--primary)}
-.node .st{width:10px;height:10px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.arrow{color:var(--grey);font-size:18px;margin:-2px 0}
-.drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;background:var(--card);border-left:1px solid var(--border);
-  box-shadow:-4px 0 18px rgba(0,0,0,.15);transform:translateX(105%);transition:transform .25s;z-index:200;overflow-y:auto;
-  padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
-.drawer.open{transform:translateX(0)}
-.overlay{position:fixed;inset:0;background:rgba(10,15,25,.35);z-index:150;display:none}
-.overlay.open{display:block}
-.filtergroup{margin-bottom:18px}
-.filtergroup h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);margin:0 0 8px}
-select,.fbtn{font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
-.fbtn.active{border-color:var(--primary);color:var(--primary);background:transparent}
-.progressbar{height:8px;border-radius:5px;background:var(--bg);overflow:hidden;border:1px solid var(--border)}
-.progressbar>div{height:100%;background:var(--success)}
-.assistant-fab{position:fixed;bottom:22px;right:22px;z-index:120;background:var(--primary);color:#fff;border:none;border-radius:26px;
-  padding:14px 18px;font-weight:600;box-shadow:0 6px 20px rgba(36,85,230,.35);display:flex;gap:8px;align-items:center}
-.assistant-panel{position:fixed;bottom:0;right:0;width:380px;max-width:94vw;height:520px;max-height:80vh;background:var(--card);
-  border:1px solid var(--border);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.18);z-index:130;
-  display:none;flex-direction:column;overflow:hidden}
-.assistant-panel.open{display:flex}
-.msg{padding:9px 13px;border-radius:12px;font-size:13.5px;max-width:85%;line-height:1.45}
-.msg.bot{background:var(--bg);align-self:flex-start}
-.msg.user{background:var(--primary);color:#fff;align-self:flex-end}
-.footer{border-top:1px solid var(--border);padding:26px 0;color:var(--sub);font-size:13px}
-::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-
-/* ---------- AUTH ---------- */
-.authwrap{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
-.authside{background:linear-gradient(160deg,#1a3fb8,#2455e6 60%,#4a78f0);color:#fff;padding:56px 48px;display:flex;flex-direction:column;justify-content:center;gap:18px}
-.authside .h1{font-size:34px;color:#fff}
-.authside p{color:rgba(255,255,255,.85);font-size:15px;line-height:1.6;margin:0;max-width:440px}
-.authside ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:rgba(255,255,255,.92)}
-.authmain{display:flex;align-items:center;justify-content:center;padding:32px 20px;position:relative}
-.authcard{width:100%;max-width:410px;padding:28px}
-.auththeme{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px}
-.tabs{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:4px;margin:16px 0 18px}
-.tabs a{flex:1;text-align:center;padding:9px;border-radius:8px;font-size:14px;font-weight:600;color:var(--sub)}
-.tabs a.on{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
-.field input[type=text],.field input[type=email],.field input[type=password]{width:100%;font-size:15px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);outline:none;font-family:inherit}
-.field input:focus{border-color:var(--primary)}
-.showpw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub);margin:-4px 0 14px;cursor:pointer}
-.err{color:var(--danger);font-size:13px;min-height:18px;margin-bottom:10px}
-.or{display:flex;align-items:center;gap:10px;color:var(--grey);font-size:12px;margin:16px 0}
-.or:before,.or:after{content:"";flex:1;height:1px;background:var(--border)}
-.userpill{display:flex;align-items:center;gap:6px}
-.logoutbtn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:10px;padding:0 12px;height:34px;font-size:13px;font-weight:600}
-.logoutbtn:hover{border-color:var(--danger);color:var(--danger)}
-@media(max-width:820px){.authwrap{grid-template-columns:1fr}.authside{padding:32px 24px}.authside .h1{font-size:26px}.authside ul{display:none}}
-@media(max-width:560px){.userpill .uname{display:none}}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:.4rem .8rem;font-size:.8rem}
+.btn-lg{padding:.8rem 1.8rem;font-size:1rem}
+.btn-icon{padding:.6rem;border-radius:var(--radius-sm)}
+/* ── Form ── */
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-label{font-size:.85rem;font-weight:600;color:var(--text)}
+.form-input{padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);font-size:.9rem;transition:border-color var(--transition)}
+.form-input:focus{outline:none;border-color:var(--primary)}
+.form-hint{font-size:.75rem;color:var(--sub)}
+.form-error{font-size:.75rem;color:var(--danger)}
+/* ── Card ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow)}
+.card-hover{transition:box-shadow var(--transition),transform var(--transition)}
+.card-hover:hover{box-shadow:0 4px 20px rgba(67,97,238,.15);transform:translateY(-2px)}
+/* ── Modal ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal{background:var(--card);border-radius:var(--radius);width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.75rem;justify-content:flex-end}
+/* ── Topbar ── */
+#topbar{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.topbar-brand{font-size:1.1rem;font-weight:800;color:var(--primary);letter-spacing:-.02em;white-space:nowrap}
+.topbar-brand span{color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:.5rem}
+#city-btn{font-size:.8rem;font-weight:600;padding:.4rem .8rem;border:1.5px solid var(--border);border-radius:20px;color:var(--sub);white-space:nowrap}
+#city-btn:hover{border-color:var(--primary);color:var(--primary)}
+.avatar-btn{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+/* ── Bottom Nav ── */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--card);border-top:1px solid var(--border);display:flex;height:60px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;font-size:.65rem;font-weight:600;color:var(--sub);transition:color var(--transition)}
+.nav-item.active{color:var(--primary)}
+.nav-icon{font-size:1.3rem;line-height:1}
+/* ── Main layout ── */
+#app{padding-bottom:70px}
+.view{display:none;padding:1.25rem}
+.view.active{display:block}
+/* ── Toast ── */
+#toast-container{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:.5rem;align-items:center;pointer-events:none}
+.toast{background:var(--text);color:var(--card);padding:.7rem 1.2rem;border-radius:20px;font-size:.85rem;font-weight:600;animation:toastIn .3s ease;white-space:nowrap;pointer-events:auto}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ── Home ── */
+.hero{padding:1.5rem 0 1rem;text-align:center}
+.hero h1{font-size:1.6rem;font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.hero p{color:var(--sub);margin-top:.4rem;font-size:.95rem}
+.search-bar{position:relative;margin-top:1rem}
+.search-bar input{width:100%;padding:.85rem 1rem .85rem 2.8rem;border:2px solid var(--border);border-radius:var(--radius);font-size:.95rem;background:var(--card);color:var(--text);transition:border-color var(--transition)}
+.search-bar input:focus{outline:none;border-color:var(--primary)}
+.search-bar .search-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);font-size:1.1rem;pointer-events:none}
+.quick-cats{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem 0 .5rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.quick-cats::-webkit-scrollbar{display:none}
+.cat-chip{flex-shrink:0;padding:.4rem .85rem;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;font-weight:600;color:var(--sub);background:var(--card);transition:all var(--transition)}
+.cat-chip:hover,.cat-chip.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.section-title{font-size:1rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+.see-all{font-size:.8rem;color:var(--primary);font-weight:600}
+/* ── Service Card ── */
+.service-grid{display:grid;gap:.75rem}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;cursor:pointer;transition:box-shadow var(--transition),transform var(--transition)}
+.service-card:hover{box-shadow:0 4px 20px rgba(67,97,238,.15);transform:translateY(-1px)}
+.service-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.service-card-icon{font-size:1.6rem;line-height:1;flex-shrink:0}
+.service-card-title{font-weight:700;font-size:.95rem;line-height:1.3}
+.service-card-auth{font-size:.75rem;color:var(--sub);margin-top:.2rem}
+.service-card-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+/* ── Explore ── */
+.explore-filters{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem 0 .5rem;scrollbar-width:none}
+.explore-filters::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:.35rem .75rem;border:1.5px solid var(--border);border-radius:20px;font-size:.78rem;font-weight:600;color:var(--sub);background:var(--card);transition:all var(--transition)}
+.filter-chip.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.search-input-sm{width:100%;padding:.6rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);font-size:.875rem}
+.search-input-sm:focus{outline:none;border-color:var(--primary)}
+/* ── Service Detail ── */
+#view-detail{padding:0}
+.detail-hero{background:var(--primary);color:#fff;padding:1.5rem 1.25rem 2.5rem}
+.detail-back{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.8);cursor:pointer;margin-bottom:1rem}
+.detail-hero h2{font-size:1.3rem;font-weight:800;line-height:1.3}
+.detail-hero .authority{font-size:.85rem;opacity:.8;margin-top:.3rem}
+.detail-body{padding:1.25rem;margin-top:-1.5rem}
+.detail-card{background:var(--card);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.detail-section-title{font-size:.9rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+.doc-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .7rem;border:1px solid var(--border);border-radius:20px;font-size:.78rem;background:var(--bg);margin:.2rem}
+.doc-chip.have{border-color:var(--success);background:var(--success-light);color:var(--success)}
+.doc-chip.missing{border-color:var(--warn);background:var(--warn-light);color:#c07a2a}
+.readiness-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:.5rem}
+.readiness-fill{height:100%;border-radius:4px;background:var(--success);transition:width .5s ease}
+/* ── CivicPath ── */
+.path-timeline{display:flex;flex-direction:column;gap:0}
+.path-step{display:flex;gap:.75rem;position:relative}
+.path-step:not(:last-child)::before{content:'';position:absolute;left:16px;top:36px;bottom:0;width:2px;background:var(--border);z-index:0}
+.path-step.completed::before{background:var(--success)}
+.step-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;z-index:1;background:var(--card);transition:all var(--transition)}
+.path-step.completed .step-dot{background:var(--success);border-color:var(--success);color:#fff}
+.path-step.active .step-dot{background:var(--primary);border-color:var(--primary);color:#fff}
+.path-step.locked .step-dot{background:var(--bg);color:var(--sub)}
+.step-body{flex:1;padding-bottom:1.25rem}
+.step-title{font-weight:700;font-size:.9rem}
+.step-desc{font-size:.82rem;color:var(--sub);margin-top:.2rem;line-height:1.5}
+.step-duration{font-size:.72rem;color:var(--sub);margin-top:.3rem;display:flex;align-items:center;gap:.25rem}
+.step-actions{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+/* ── Documents ── */
+.doc-list{display:flex;flex-direction:column;gap:.75rem}
+.doc-row{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;display:flex;align-items:center;gap:.75rem}
+.doc-icon{font-size:1.4rem;flex-shrink:0}
+.doc-meta{flex:1;min-width:0}
+.doc-name{font-weight:600;font-size:.9rem;truncate:overflow}
+.doc-size{font-size:.75rem;color:var(--sub)}
+.doc-actions{display:flex;gap:.5rem;flex-shrink:0}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--primary);background:var(--primary-light)}
+/* ── Journeys ── */
+.journey-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;margin-bottom:.75rem}
+.journey-title{font-weight:700;font-size:.95rem}
+.journey-service{font-size:.8rem;color:var(--sub);margin-top:.15rem}
+.journey-status-row{display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;flex-wrap:wrap;gap:.5rem}
+.status-select{padding:.35rem .7rem;border:1.5px solid var(--border);border-radius:20px;font-size:.78rem;font-weight:600;color:var(--text);background:var(--card);cursor:pointer}
+/* ── AI Chat ── */
+#ai-panel{position:fixed;bottom:70px;right:1rem;width:340px;max-height:70vh;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;z-index:150;transition:opacity var(--transition),transform var(--transition)}
+#ai-panel.hidden{opacity:0;pointer-events:none;transform:translateY(10px)}
+.ai-header{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ai-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;min-height:200px;max-height:calc(70vh - 120px)}
+.ai-msg{max-width:85%;padding:.6rem .9rem;border-radius:12px;font-size:.82rem;line-height:1.5}
+.ai-msg.user{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.assistant{align-self:flex-start;background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:4px}
+.ai-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem}
+.ai-input{flex:1;padding:.55rem .8rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:.85rem;background:var(--card);color:var(--text)}
+.ai-input:focus{outline:none;border-color:var(--primary)}
+.ai-fab{position:fixed;bottom:80px;right:1rem;width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;font-size:1.4rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(67,97,238,.4);z-index:149;transition:transform var(--transition)}
+.ai-fab:hover{transform:scale(1.05)}
+/* ── Auth Modal ── */
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+.auth-tab{flex:1;padding:.7rem;text-align:center;font-size:.9rem;font-weight:600;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:all var(--transition)}
+.auth-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+/* ── City Picker ── */
+.city-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:1rem}
+.city-option{border:2px solid var(--border);border-radius:var(--radius);padding:1rem .75rem;text-align:center;cursor:pointer;transition:all var(--transition)}
+.city-option:hover{border-color:var(--primary)}
+.city-option.selected{border-color:var(--primary);background:var(--primary-light)}
+.city-emoji{font-size:1.8rem;display:block;margin-bottom:.4rem}
+.city-name{font-size:.85rem;font-weight:700}
+.city-state{font-size:.7rem;color:var(--sub)}
+/* ── Admin ── */
+.admin-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.admin-table th{text-align:left;padding:.6rem .75rem;border-bottom:1.5px solid var(--border);font-weight:700;color:var(--sub);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.admin-table td{padding:.6rem .75rem;border-bottom:1px solid var(--border)}
+.admin-table tr:hover td{background:var(--bg)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+/* ── Progress ring ── */
+.progress-ring-wrap{display:flex;align-items:center;justify-content:center;gap:1rem;padding:1rem 0}
+.progress-ring-text{text-align:center}
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--sub)}
+.empty-state-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.35rem}
+/* ── My Services ── */
+.saved-list{display:flex;flex-direction:column;gap:.75rem}
+/* ── Responsive ── */
+@media(min-width:640px){
+  .service-grid{grid-template-columns:repeat(2,1fr)}
+  #ai-panel{width:380px}
+  .view{max-width:680px;margin:0 auto;padding:1.5rem}
+  #view-detail{max-width:680px;margin:0 auto;padding:0}
+  .detail-body{padding:1.5rem}
+}
 </style>
 </head>
 <body>
-<div id="overlay" class="overlay" onclick="closeDrawer()"></div>
-<div id="app"></div>
-<button class="assistant-fab" onclick="toggleAssistant()">💬 Civic Assistant</button>
-<div id="assistantPanel" class="assistant-panel"></div>
-<div id="drawer" class="drawer"></div>
+
+<!-- ── TOPBAR ── -->
+<header id="topbar">
+  <div class="topbar-brand">Civic<span>Flow</span></div>
+  <div class="topbar-right">
+    <button id="city-btn" onclick="openCityPicker()">📍 <span id="city-label">Select City</span></button>
+    <button id="theme-btn" class="btn-icon" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button id="auth-avatar" class="avatar-btn hidden" onclick="showUserMenu()">?</button>
+    <button id="auth-login-btn" class="btn btn-primary btn-sm" onclick="openAuth('login')">Sign In</button>
+  </div>
+</header>
+
+<!-- ── MAIN APP ── -->
+<div id="app">
+
+  <!-- HOME -->
+  <div id="view-home" class="view active">
+    <div class="hero">
+      <h1>Navigate Government<br>Services Easily</h1>
+      <p id="hero-sub">Find, track, and complete civic services in your city.</p>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="home-search" placeholder="Search for passport, ration card, property tax…" oninput="handleHomeSearch(this.value)">
+    </div>
+    <div class="quick-cats" id="quick-cats"></div>
+    <div id="home-search-results" class="hidden">
+      <div class="section-title">Search Results</div>
+      <div class="service-grid" id="search-results-grid"></div>
+    </div>
+    <div id="home-main">
+      <div class="section-title mt-4">
+        <span>Popular Services</span>
+        <a class="see-all" href="#" onclick="navigate('explore');return false">See all →</a>
+      </div>
+      <div class="service-grid" id="home-services-grid">
+        <div class="card" style="text-align:center;padding:2rem;grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPLORE -->
+  <div id="view-explore" class="view">
+    <div class="flex items-center justify-between" style="margin-bottom:.75rem">
+      <h2 style="font-size:1.1rem;font-weight:800">Explore Services</h2>
+    </div>
+    <input type="search" class="search-input-sm" id="explore-search" placeholder="Search services…" oninput="handleExploreSearch(this.value)">
+    <div class="explore-filters mt-2" id="explore-filters">
+      <button class="filter-chip active" data-cat="" onclick="setExploreFilter(this,'')">All</button>
+    </div>
+    <div class="service-grid mt-4" id="explore-grid">
+      <div class="card" style="text-align:center;padding:2rem;grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+    <div id="explore-more-wrap" class="hidden" style="text-align:center;margin-top:1rem">
+      <button class="btn btn-outline" onclick="loadMoreExplore()">Load more</button>
+    </div>
+  </div>
+
+  <!-- SERVICE DETAIL -->
+  <div id="view-detail">
+    <div class="detail-hero" id="detail-hero">
+      <div class="detail-back" onclick="history.back()">← Back</div>
+      <div id="detail-loading" style="text-align:center"><div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div></div>
+      <div id="detail-header-content" class="hidden"></div>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+
+  <!-- CIVICPATH -->
+  <div id="view-civicpath" class="view">
+    <div class="flex items-center gap-3" style="margin-bottom:1rem">
+      <button onclick="history.back()" class="btn btn-outline btn-sm">← Back</button>
+      <h2 style="font-size:1rem;font-weight:800" id="civicpath-title">Service Steps</h2>
+    </div>
+    <div id="civicpath-readiness" class="card" style="margin-bottom:1rem"></div>
+    <div id="civicpath-steps"></div>
+  </div>
+
+  <!-- MY DOCUMENTS -->
+  <div id="view-documents" class="view">
+    <div class="flex items-center justify-between" style="margin-bottom:1rem">
+      <h2 style="font-size:1.1rem;font-weight:800">My Documents</h2>
+      <button class="btn btn-primary btn-sm" onclick="openUploadModal()">+ Upload</button>
+    </div>
+    <div id="documents-list">
+      <div style="text-align:center;padding:2rem"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- MY SERVICES -->
+  <div id="view-myservices" class="view">
+    <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem">My Services</h2>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button class="filter-chip active" id="ms-tab-saved" onclick="setMyServicesTab('saved')">Saved</button>
+      <button class="filter-chip" id="ms-tab-journeys" onclick="setMyServicesTab('journeys')">Journeys</button>
+    </div>
+    <div id="ms-saved-content"></div>
+    <div id="ms-journeys-content" class="hidden"></div>
+  </div>
+
+  <!-- JOURNEYS -->
+  <div id="view-journeys" class="view">
+    <div class="flex items-center justify-between" style="margin-bottom:1rem">
+      <h2 style="font-size:1.1rem;font-weight:800">Application Journeys</h2>
+      <button class="btn btn-primary btn-sm" onclick="openNewJourneyModal()">+ New</button>
+    </div>
+    <div id="journeys-list">
+      <div style="text-align:center;padding:2rem"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="view-admin" class="view">
+    <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem">⚙️ Admin Panel</h2>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button class="filter-chip active" id="adm-tab-services" onclick="setAdminTab('services')">Services</button>
+      <button class="filter-chip" id="adm-tab-feedback" onclick="setAdminTab('feedback')">Feedback</button>
+    </div>
+    <div id="admin-services-content"></div>
+    <div id="admin-feedback-content" class="hidden"></div>
+  </div>
+
+</div><!-- #app -->
+
+<!-- ── BOTTOM NAV ── -->
+<nav id="bottom-nav">
+  <button class="nav-item active" data-view="home" onclick="navigate('home')">
+    <span class="nav-icon">🏠</span><span>Home</span>
+  </button>
+  <button class="nav-item" data-view="explore" onclick="navigate('explore')">
+    <span class="nav-icon">🔍</span><span>Explore</span>
+  </button>
+  <button class="nav-item" data-view="documents" onclick="navigate('documents')">
+    <span class="nav-icon">📄</span><span>Docs</span>
+  </button>
+  <button class="nav-item" data-view="myservices" onclick="navigate('myservices')">
+    <span class="nav-icon">⭐</span><span>My Services</span>
+  </button>
+</nav>
+
+<!-- ── AI FAB ── -->
+<button class="ai-fab hidden" id="ai-fab" onclick="toggleAI()" title="Ask CivicAI">🤖</button>
+
+<!-- ── AI PANEL ── -->
+<div id="ai-panel" class="hidden">
+  <div class="ai-header">
+    <div class="flex items-center gap-2">
+      <span>🤖</span>
+      <span style="font-weight:700;font-size:.9rem">CivicAI Assistant</span>
+    </div>
+    <button onclick="toggleAI()" class="btn-icon text-sub" style="font-size:1.1rem">✕</button>
+  </div>
+  <div class="ai-messages" id="ai-messages">
+    <div class="ai-msg assistant">Hi! I'm CivicAI. Ask me anything about government services in your city — documents needed, steps, fees, office locations, and more.</div>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="ai-input" placeholder="Ask anything…" onkeydown="if(event.key==='Enter')sendAIMessage()">
+    <button class="btn btn-primary btn-sm" onclick="sendAIMessage()">Send</button>
+  </div>
+</div>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toast-container"></div>
+
+<!-- ── MODALS ── -->
+
+<!-- Auth Modal -->
+<div id="auth-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-weight:800">Welcome to CivicFlow</span>
+      <button onclick="closeModal('auth-modal')" class="btn-icon text-sub">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+      <form id="auth-form" onsubmit="submitAuth(event)">
+        <div class="flex-col gap-3">
+          <div class="form-group" id="field-name" style="display:none">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" id="auth-name" type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="auth-email" type="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" id="auth-password" type="password" placeholder="••••••••" required>
+          </div>
+          <div id="auth-error" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary w-full" id="auth-submit-btn">Sign In</button>
+          <button type="button" class="btn btn-outline w-full" onclick="continueAsGuest()">Continue as Guest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- City Picker Modal -->
+<div id="city-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-weight:800">Choose Your City</span>
+      <button onclick="closeModal('city-modal')" class="btn-icon text-sub">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-sm text-sub">Select your city to see relevant government services and offices.</p>
+      <div class="city-grid" id="city-grid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="confirmCitySelection()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Document Modal -->
+<div id="upload-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-weight:800">Upload Document</span>
+      <button onclick="closeModal('upload-modal')" class="btn-icon text-sub">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="upload-form" onsubmit="submitUpload(event)">
+        <div class="flex-col gap-3">
+          <div class="form-group">
+            <label class="form-label">Document Name</label>
+            <input class="form-input" id="upload-name" type="text" placeholder="e.g. Aadhaar Card" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Document Type</label>
+            <select class="form-input" id="upload-type">
+              <option value="">Select type…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">File</label>
+            <input class="form-input" id="upload-file" type="file" accept=".jpg,.jpeg,.png,.pdf,.webp" required>
+            <span class="form-hint">Accepted: JPG, PNG, PDF, WebP — max 10MB</span>
+          </div>
+          <div id="upload-error" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary w-full" id="upload-submit-btn">Upload Document</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- New Journey Modal -->
+<div id="journey-modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-weight:800">Track Application</span>
+      <button onclick="closeModal('journey-modal')" class="btn-icon text-sub">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="journey-form" onsubmit="submitJourney(event)">
+        <div class="flex-col gap-3">
+          <div class="form-group">
+            <label class="form-label">Application Title</label>
+            <input class="form-input" id="journey-title" type="text" placeholder="e.g. Domicile Certificate Application" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Application / Reference Number</label>
+            <input class="form-input" id="journey-number" type="text" placeholder="Optional — enter if you have one">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Current Status</label>
+            <select class="form-input" id="journey-status">
+              <option value="preparing">Preparing documents</option>
+              <option value="submitted">Submitted</option>
+              <option value="under_review">Under review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="pending_payment">Pending payment</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input" id="journey-notes" rows="3" placeholder="Any notes about your application…" style="resize:vertical"></textarea>
+          </div>
+          <div id="journey-error" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary w-full" id="journey-submit-btn">Save Journey</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- User Menu Modal -->
+<div id="user-menu-modal" class="modal-backdrop hidden" onclick="if(event.target===this)closeModal('user-menu-modal')">
+  <div class="modal" style="max-width:300px">
+    <div class="modal-body">
+      <div style="text-align:center;padding:.5rem 0 1rem">
+        <div class="avatar-btn" style="width:52px;height:52px;font-size:1.2rem;margin:0 auto .5rem" id="menu-avatar">?</div>
+        <div style="font-weight:700" id="menu-name"></div>
+        <div class="text-sm text-sub" id="menu-email"></div>
+        <div id="menu-city" class="badge badge-primary mt-1"></div>
+      </div>
+      <div class="flex-col gap-2">
+        <button class="btn btn-outline w-full" onclick="navigate('documents');closeModal('user-menu-modal')">📄 My Documents</button>
+        <button class="btn btn-outline w-full" onclick="navigate('journeys');closeModal('user-menu-modal')">📋 My Journeys</button>
+        <button id="admin-link-btn" class="btn btn-outline w-full hidden" onclick="navigate('admin');closeModal('user-menu-modal')">⚙️ Admin Panel</button>
+        <button class="btn btn-danger w-full" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-/* ---------- DATA LAYER ---------- */
-const LOCATIONS = [
-  {city:'Mumbai',state:'Maharashtra'},
-  {city:'Ahmedabad',state:'Gujarat'},
-  {city:'Bengaluru',state:'Karnataka'}
-];
-const CATEGORIES = ['Business','Transport','Education','Property','Tax & Finance','Certificates','Health','Employment','Agriculture','Municipal Services'];
-
-// authority per state helper
-const AUTH = {
-  Maharashtra:{biz:'Maharashtra Directorate of Industries',food:'FDA Maharashtra & Municipal Corporation of Mumbai',rto:'Maharashtra Transport Department',local:'Municipal Corporation of Mumbai',tax:'Maharashtra GST Department'},
-  Gujarat:{biz:'Gujarat Industries Commissionerate',food:'FDCA Gujarat & Ahmedabad Municipal Corporation',rto:'Gujarat Transport Department',local:'Ahmedabad Municipal Corporation',tax:'Gujarat Commercial Tax Department'},
-  Karnataka:{biz:'Karnataka Udyog Mitra',food:'FSSAI Karnataka & BBMP',rto:'Karnataka Transport Department',local:'Bruhat Bengaluru Mahanagara Palike (BBMP)',tax:'Karnataka Commercial Taxes Department'}
-};
-
-function svcId(name,state){return (name+'-'+state).toLowerCase().replace(/[^a-z0-9]+/g,'-');}
-function makeService(o){o.id=svcId(o.name,o.state);o.slug=o.id;return o;}
-
-let SERVICES = [];
-LOCATIONS.forEach(loc=>{
-  const a = AUTH[loc.state];
-  SERVICES.push(makeService({name:'Business Registration',category:'Business',serviceType:'Registration',level:'State',state:loc.state,city:loc.city,
-    authority:a.biz,docs:['PAN Card','Address Proof','Identity Proof','Passport Photo'],prereqs:['Identity information'],dependencies:[],
-    fee:'₹500–₹2,000 (type-dependent)',online:true,sourceStatus:'verified',officialUrl:'https://www.startupindia.gov.in/',
-    desc:'Register a new business entity so it can legally operate, open a bank account, and apply for other licences.',
-    eligibility:'Any individual or group starting a proprietorship, partnership, or company.',userTypes:['Business Owner']}));
-  SERVICES.push(makeService({name:'Food Business Registration',category:'Business',serviceType:'Registration',level:'State',state:loc.state,city:loc.city,
-    authority:a.food,docs:['FSSAI Form-A/B','Business Registration Proof','ID Proof','Premises Proof'],prereqs:['Business Registration'],dependencies:['Local Premises Permission'],
-    fee:'₹100–₹7,500 depending on turnover',online:true,sourceStatus:'verified',officialUrl:'https://foscos.fssai.gov.in/',
-    desc:'Register a food business (restaurant, cloud kitchen, food stall) with the food safety authority.',
-    eligibility:'Anyone manufacturing, storing, transporting or selling food.',userTypes:['Business Owner']}));
-  SERVICES.push(makeService({name:'Driving Licence',category:'Transport',serviceType:'Licence',level:'State',state:loc.state,city:loc.city,
-    authority:a.rto,docs:['Age Proof','Address Proof','Passport Photo','Learner Licence'],prereqs:[],dependencies:[],
-    fee:'₹200–₹700',online:true,sourceStatus:'verified',officialUrl:'https://sarathi.parivahan.gov.in/',
-    desc:'Apply for a new driving licence or renew an existing one.',eligibility:'Indian resident, minimum age depending on vehicle class.',userTypes:['Individual']}));
-  SERVICES.push(makeService({name:'Birth Certificate',category:'Certificates',serviceType:'Certificate',level:'Municipal',state:loc.state,city:loc.city,
-    authority:a.local,docs:['Hospital Discharge Card','Parents ID Proof','Address Proof'],prereqs:[],dependencies:[],
-    fee:'₹0–₹100',online:true,sourceStatus:'verified',officialUrl:'https://crsorgi.gov.in/',
-    desc:'Obtain an official record of birth registration.',eligibility:'Parents or legal guardians of the child.',userTypes:['Parent','Individual']}));
-  SERVICES.push(makeService({name:'Property Tax Payment',category:'Property',serviceType:'Payment',level:'Municipal',state:loc.state,city:loc.city,
-    authority:a.local,docs:['Property ID / Survey Number','Previous Receipt'],prereqs:[],dependencies:[],
-    fee:'Varies by property',online:true,sourceStatus:'needs-verification',officialUrl:null,
-    desc:'Pay annual municipal property tax for a residential or commercial property.',eligibility:'Property owners within municipal limits.',userTypes:['Individual','Business Owner']}));
-  SERVICES.push(makeService({name:'Local Premises Permission',category:'Municipal Services',serviceType:'Permit',level:'Municipal',state:loc.state,city:loc.city,
-    authority:a.local,docs:['Property Ownership/Lease Proof','Layout Plan','Business Registration Proof'],prereqs:['Business Registration'],dependencies:[],
-    fee:'₹300–₹3,000',online:false,sourceStatus:'needs-verification',officialUrl:null,
-    desc:'Local municipal permission to operate a commercial premises at a given address.',eligibility:'Businesses operating from a physical premises.',userTypes:['Business Owner']}));
-});
-
-/* ---------- STATE ---------- */
-const state = {
-  theme: localStorage.getItem('cf_theme') || 'light',
-  location: JSON.parse(localStorage.getItem('cf_location') || 'null') || LOCATIONS[0],
-  saved: [],
-  progress: {}, // key: goal|state -> array of completed node ids (loaded per user)
+// ================================================================
+// STATE
+// ================================================================
+const S = {
+  token: localStorage.getItem('cf_token'),
   user: null,
-  chat: []
+  city: localStorage.getItem('cf_city') || null,
+  cityData: null,
+  categories: [],
+  cities: [],
+  services: {},
+  currentView: 'home',
+  currentService: null,
+  currentConversationId: null,
+  exploreOffset: 0,
+  exploreTotal: 0,
+  exploreCategory: '',
+  exploreQuery: '',
+  myDocs: [],
+  authMode: 'login',
+  pendingCitySlug: null,
+  adminTab: 'services',
+  msTab: 'saved',
+  journeyServiceId: null,
 };
-function persist(){
 
-  localStorage.setItem(
-    'cf_theme',
-    state.theme
-  );
+const API = '';
 
-  localStorage.setItem(
-    'cf_location',
-    JSON.stringify(state.location)
-  );
-
+// ================================================================
+// API HELPERS
+// ================================================================
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
+  const res = await fetch(API + path, { headers, ...opts });
+  if (opts.raw) return res;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
+  return data;
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function readJSON(k,fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
 
-/* ---------- AUTH (demo only: localStorage, no server) ---------- */
-
-const CFAuth = {
-
-  async signup(name, email, pw, pw2) {
-
-    name = name.trim();
-    email = email.trim().toLowerCase();
-
-    if (name.length < 2)
-      return 'Please enter your full name.';
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      return 'Please enter a valid email address.';
-
-    if (pw.length < 6)
-      return 'Password must be at least 6 characters.';
-
-    if (pw !== pw2)
-      return 'Passwords do not match.';
-
-    try {
-
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: pw
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return data.message || 'Signup failed.';
-      }
-
-      localStorage.setItem('cf_token', data.token);
-
-      this.start(data.user);
-
-      await this.loadUserData();
-
-      return null;
-
-    } catch (error) {
-
-      console.error('Signup error:', error);
-
-      return 'Unable to connect to CivicFlow server.';
-
-    }
-  },
-
-
-  async login(email, pw) {
-
-    email = email.trim().toLowerCase();
-
-    if (!email || !pw)
-      return 'Enter your email and password.';
-
-    try {
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-        body: JSON.stringify({
-          email: email,
-          password: pw
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return data.message || 'Login failed.';
-      }
-
-      localStorage.setItem('cf_token', data.token);
-
-      this.start(data.user);
-
-      await this.loadUserData();
-
-      return null;
-
-    } catch (error) {
-
-      console.error('Login error:', error);
-
-      return 'Unable to connect to CivicFlow server.';
-
-    }
-  },
-
-
-  async restore() {
-
-    const token = localStorage.getItem('cf_token');
-
-    if (!token) {
-      return;
-    }
-
-    try {
-
-      const response = await fetch('/api/auth/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-
-        localStorage.removeItem('cf_token');
-
-        return;
-      }
-
-      const data = await response.json();
-
-      this.start(data.user);
-
-      await this.loadUserData();
-
-    } catch (error) {
-
-      console.error('Session restore error:', error);
-
-    }
-  },
-
-
-  async loadUserData() {
-
-    if (!state.user || state.user.guest) {
-      state.saved = [];
-      state.progress = {};
-      return;
-    }
-
-    const token =
-      localStorage.getItem('cf_token');
-
-    if (!token) return;
-
-
-    // Load saved services
-    try {
-
-      const savedResponse =
-        await fetch('/api/saved', {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        });
-
-      if (savedResponse.ok) {
-
-        state.saved =
-          await savedResponse.json();
-
-      }
-
-    } catch (error) {
-
-      console.error(
-        'Could not load saved services:',
-        error
-      );
-
-    }
-
-
-    // Load CivicPath progress
-    try {
-
-      const progressResponse =
-        await fetch('/api/progress', {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        });
-
-      if (progressResponse.ok) {
-
-        const progress =
-          await progressResponse.json();
-
-        state.progress = {};
-
-        progress.forEach(item => {
-
-          const key =
-            item.goal + '|' + item.state;
-
-          if (!state.progress[key]) {
-            state.progress[key] = [];
-          }
-
-          if (
-            !state.progress[key]
-              .includes(item.step_id)
-          ) {
-
-            state.progress[key].push(
-              item.step_id
-            );
-
-          }
-
-        });
-
-      }
-
-    } catch (error) {
-
-      console.error(
-        'Could not load progress:',
-        error
-      );
-
-    }
-
-  },
-
-
-  start(user) {
-
-    state.user = {
-      id: user.id,
-      name: user.name,
-      email: user.email || '',
-      guest: !!user.guest
-    };
-
-    state.chat = [];
-
-  },
-
-
-  guest() {
-
-    this.start({
-      id: 'guest',
-      name: 'Guest',
-      email: '',
-      guest: true
-    });
-
-  },
-
-
-  logout() {
-
-    localStorage.removeItem('cf_token');
-
-    state.user = null;
-    state.saved = [];
-    state.progress = {};
-    state.chat = [];
-
-    const p =
-      document.getElementById(
-        'assistantPanel'
-      );
-
-    if (p) {
-      p.classList.remove('open');
-    }
-
-    closeDrawer();
-
-  }
-
-};
-async function submitAuth(e,mode){
-  e.preventDefault();
-  const f=e.target,err=document.getElementById('autherr'),btn=f.querySelector('button[type=submit]');
-  err.textContent='';btn.disabled=true;
-  let msg;
-  try{
-    if(mode==='signup') msg=await CFAuth.signup(f.elements['name'].value,f.elements['email'].value,f.elements['password'].value,f.elements['confirm'].value);
-    else msg=await CFAuth.login(f.elements['email'].value,f.elements['password'].value);
-  }catch(ex){msg='Something went wrong. Please try again.';}
-  btn.disabled=false;
-  if(msg){err.textContent=msg;return false;}
-  location.hash='/';render();
-  return false;
+async function apiForm(path, formData) {
+  const headers = {};
+  if (S.token) headers['Authorization'] = `Bearer ${S.token}`;
+  const res = await fetch(API + path, { method: 'POST', headers, body: formData });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.message || 'Upload failed');
+  return data;
 }
-function guestLogin(){CFAuth.guest();location.hash='/';render();}
-function doLogout(){CFAuth.logout();location.hash='/login';render();}
-function togglePw(cb){document.querySelectorAll('#authform input[data-pw]').forEach(i=>i.type=cb.checked?'text':'password');}
 
-function authView(mode){
-  const login = mode==='login';
-  return `<div class="authwrap">
-    <div class="authside">
-      <div class="logo" style="color:#fff;font-size:20px"><span class="dot" style="background:#fff"></span>CivicFlow</div>
-      <div class="h1">Your path through government, made simple.</div>
-      <p>Discover the right service, understand the requirements and follow a personalised CivicPath to the official government portal.</p>
-      <ul><li>📍 Location-aware services and authorities</li><li>🧭 Step-by-step CivicPath with dependencies</li><li>★ Save services and track your progress</li></ul>
-    </div>
-    <div class="authmain">
-      <button class="iconbtn auththeme" onclick="toggleTheme()" aria-label="Toggle theme">${state.theme==='dark'?'◐':'☀'}</button>
-      <div class="card authcard">
-        <div class="h2" style="margin:0">${login?'Welcome back':'Create your account'}</div>
-        <div class="sub" style="font-size:14px">${login?'Log in to continue to CivicFlow.':'Sign up to save services and track your CivicPath.'}</div>
-        <div class="tabs"><a href="#/login" class="${login?'on':''}">Log in</a><a href="#/signup" class="${!login?'on':''}">Sign up</a></div>
-        <form id="authform" onsubmit="return submitAuth(event,'${mode}')" novalidate>
-          ${login?'':`<div class="field"><label for="f_name">Full name</label><input id="f_name" name="name" type="text" autocomplete="name" placeholder="Your name"></div>`}
-          <div class="field"><label for="f_email">Email</label><input id="f_email" name="email" type="email" autocomplete="email" placeholder="you@example.com"></div>
-          <div class="field"><label for="f_pw">Password</label><input id="f_pw" name="password" data-pw type="password" autocomplete="${login?'current-password':'new-password'}" placeholder="${login?'Your password':'At least 6 characters'}"></div>
-          ${login?'':`<div class="field"><label for="f_pw2">Confirm password</label><input id="f_pw2" name="confirm" data-pw type="password" autocomplete="new-password" placeholder="Re-enter password"></div>`}
-          <label class="showpw"><input type="checkbox" onchange="togglePw(this)"> Show password</label>
-          <div id="autherr" class="err" role="alert"></div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">${login?'Log in':'Create account'}</button>
-        </form>
-        <div class="or">or</div>
-        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="guestLogin()">Continue as guest</button>
-        <p class="sub" style="font-size:12px;margin:14px 0 0">
-Your account is securely connected to CivicFlow.
-</p>
-      </div>
-    </div>
-  </div>`;
+// ================================================================
+// TOAST
+// ================================================================
+function toast(msg, type = 'default', duration = 3000) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), duration);
 }
-document.documentElement.setAttribute('data-theme', state.theme);
-function toggleTheme(){state.theme = state.theme==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',state.theme);persist();render();}
-function setLocation(loc){state.location=loc;persist();render();}
 
-/* ---------- CIVICPATH ENGINE ---------- */
-function buildCivicPath(goalKey, loc){
-  const a = AUTH[loc.state];
-  const key = state.progress[goalKey+'|'+loc.state] || [];
-  const templates = {
-    'food-business':[
-      {id:'identity',title:'Identity Information',why:'Confirms who is applying, required for every downstream step.',authority:'—',docs:['ID Proof','Address Proof'],officialUrl:null,alwaysComplete:true},
-      {id:'bizreg',title:'Business Registration',why:'Legally establishes the business entity before any activity-specific licence can be issued.',authority:a.biz,docs:['PAN Card','ID Proof','Address Proof'],officialUrl:'https://www.startupindia.gov.in/'},
-      {id:'localperm',title:'Local Premises Permission',why:'Required by the municipal authority before food operations begin at a physical premises. Depends on Business Registration.',authority:a.local,docs:['Premises Proof','Layout Plan'],officialUrl:null,requires:'bizreg'},
-      {id:'foodreg',title:'Food Business Registration',why:'Activity-specific registration with the food safety authority — conditional on premises type and turnover.',authority:a.food,docs:['FSSAI Form-A/B','Premises Proof'],officialUrl:'https://foscos.fssai.gov.in/',requires:'bizreg',conditional:true},
-      {id:'compliance',title:'Ongoing Compliance',why:'Periodic renewals and inspections once the business is operational.',authority:a.food,docs:['Renewal Form'],officialUrl:null,requires:'foodreg',upcoming:true}
-    ],
-    'business-registration':[
-      {id:'identity',title:'Identity Information',why:'Confirms who is applying.',authority:'—',docs:['ID Proof'],officialUrl:null,alwaysComplete:true},
-      {id:'bizreg',title:'Business Registration',why:'Core registration step for the chosen business type.',authority:a.biz,docs:['PAN Card','ID Proof'],officialUrl:'https://www.startupindia.gov.in/'},
-      {id:'tax',title:'Tax Registration (GST)',why:'Needed once turnover crosses the GST threshold — conditional on business circumstances.',authority:a.tax,docs:['Business Registration Proof'],officialUrl:null,requires:'bizreg',conditional:true},
-      {id:'localperm',title:'Local Permission',why:'Municipal permission for operating premises.',authority:a.local,docs:['Premises Proof'],officialUrl:null,requires:'bizreg',upcoming:true}
-    ]
-  };
-  const nodes = (templates[goalKey]||templates['business-registration']).map(n=>{
-    let status;
-    if(n.alwaysComplete) status='COMPLETED';
-    else if(key.includes(n.id)) status='COMPLETED';
-    else if(n.requires && !key.includes(n.requires) && !templates[goalKey].find(x=>x.id===n.requires)?.alwaysComplete && n.requires!=='identity') status='BLOCKED';
-    else if(n.upcoming) status='UPCOMING';
-    else if(n.conditional) status='CONDITIONAL';
-    else status='AVAILABLE';
-    // identity always satisfies requires
-    if(n.requires==='identity') status = key.includes(n.id)?'COMPLETED': (n.conditional?'CONDITIONAL': n.upcoming?'UPCOMING':'AVAILABLE');
-    else if(n.requires && n.requires!=='identity'){
-      const reqDone = key.includes(n.requires);
-      if(!reqDone) status='BLOCKED';
-      else if(key.includes(n.id)) status='COMPLETED';
-      else status = n.conditional?'CONDITIONAL':(n.upcoming?'UPCOMING':'AVAILABLE');
-    }
-    return {...n,status};
+// ================================================================
+// ROUTING
+// ================================================================
+const VIEWS = ['home','explore','detail','civicpath','documents','myservices','journeys','admin'];
+
+function navigate(view, data) {
+  VIEWS.forEach(v => {
+    const el = document.getElementById(`view-${v}`);
+    if (el) el.classList.remove('active');
   });
-  return nodes;
-}
-const STATUS_COLOR = {COMPLETED:'var(--success)',AVAILABLE:'var(--primary)',BLOCKED:'var(--danger)',CONDITIONAL:'var(--warn)',UPCOMING:'var(--grey)'};
-const STATUS_ICON = {COMPLETED:'✓',AVAILABLE:'→',BLOCKED:'🔒',CONDITIONAL:'❖',UPCOMING:'⏳'};
-
-/* ---------- ROUTER ---------- */
-function navigate(hash){location.hash=hash;}
-window.addEventListener('hashchange',render);
-function currentRoute(){
-  const h = location.hash.slice(1) || '/';
-  const [path,qs] = h.split('?');
-  const params = new URLSearchParams(qs||'');
-  return {path,params};
-}
-
-function layout(content){
-  const {path} = currentRoute();
-  const nav=(href,label)=>`<a href="#${href}" class="${path===href?'active':''}">${label}</a>`;
-  return `
-  <header class="nav"><div class="container navrow">
-    <div class="logo"><span class="dot"></span>CivicFlow</div>
-    <nav class="navlinks">${nav('/','Home')}${nav('/explore','Explore Services')}${nav('/civicpath','My CivicPath')}${nav('/dashboard','Dashboard')}${nav('/saved','Saved')}${nav('/about','About')}</nav>
-    <div class="navright">
-      <div class="pill">📍 ${state.location.city}, ${state.location.state}
-        <select onchange="setLocation(LOCATIONS[this.value])" style="border:none;background:transparent;color:var(--sub);font-size:12px;margin-left:4px">
-          ${LOCATIONS.map((l,i)=>`<option value="${i}" ${l.city===state.location.city?'selected':''}>${l.city}</option>`).join('')}
-        </select>
-      </div>
-      <button class="iconbtn hambtn" onclick="alert('Menu: Home, Explore, CivicPath, Dashboard, Saved, About')">☰</button>
-      <button class="iconbtn" onclick="toggleTheme()">${state.theme==='dark'?'◐':'☀'}</button>
-      ${state.user?`<div class="userpill"><span class="pill" title="${esc(state.user.email||'Guest session')}">👤 <span class="uname">${esc(state.user.name)}</span></span><button class="logoutbtn" onclick="doLogout()">Log out</button></div>`:''}
-    </div>
-  </div></header>
-  <main>${content}</main>
-  <footer class="footer"><div class="container">CivicFlow is an independent civic-tech navigation platform. It does not represent or replace any government department. Official portals remain the final authority. · <a href="#/about">About</a></div></footer>
-  `;
+  const el = document.getElementById(`view-${view}`);
+  if (!el) return;
+  el.classList.add('active');
+  S.currentView = view;
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.view === view);
+  });
+  window.location.hash = view === 'home' ? '' : `#/${view}`;
+  window.scrollTo(0, 0);
+  if (view === 'home') loadHomeServices();
+  if (view === 'explore') loadExplore();
+  if (view === 'documents') loadDocuments();
+  if (view === 'myservices') loadMyServices();
+  if (view === 'journeys') loadJourneys();
+  if (view === 'admin') loadAdmin();
+  if (view === 'detail' && data) loadServiceDetail(data);
+  if (view === 'civicpath' && data) loadCivicPath(data);
 }
 
-function serviceCard(s){
-  return `<div class="card svc-card" onclick="navigate('/services/${s.id}')">
-    <div style="display:flex;justify-content:space-between"><strong>${s.name}</strong><span class="tag">${s.level}</span></div>
-    <div class="sub" style="font-size:13px">${s.category} · ${s.city}, ${s.state}</div>
-    <div style="display:flex;gap:8px;align-items:center;font-size:12px">
-      <span class="tag">${s.online?'Online':'Offline'}</span>
-      <span class="${s.sourceStatus==='verified'?'badge-ok':''}" style="color:${s.sourceStatus==='verified'?'var(--success)':'var(--warn)'};font-weight:600">${s.sourceStatus==='verified'?'✓ Official source':'⚠ Needs verification'}</span>
-    </div>
-    <button class="btn btn-outline" style="align-self:flex-start;margin-top:4px" onclick="event.stopPropagation();navigate('/services/${s.id}')">View Service</button>
-  </div>`;
+window.addEventListener('hashchange', handleHashRoute);
+function handleHashRoute() {
+  const h = window.location.hash.replace('#/', '').replace('#', '');
+  if (!h || h === '') navigate('home');
+  else if (VIEWS.includes(h)) navigate(h);
 }
 
-function homeView(){
-  const popular = SERVICES.filter(s=>s.city===state.location.city).slice(0,6);
-  return layout(`
-  <section class="section"><div class="container">
-    <div class="h1">Government services,<br>without the confusion.</div>
-    <p class="sub" style="max-width:560px">Tell us what you want to accomplish. CivicFlow helps you discover the right service, understand the requirements and follow your personalized path to the official government portal.</p>
-    <div class="searchbox" style="max-width:640px;margin-top:20px">
-      <input id="homesearch" placeholder="What are you trying to get done?" onkeydown="if(event.key==='Enter')doSearch()">
-      <button class="btn btn-primary" onclick="doSearch()">BUILD MY CIVICPATH</button>
-    </div>
-    <div class="chips">
-      ${['Register a small business','Start a food business','Apply for a driving licence','Get a birth certificate','Pay property tax'].map(c=>`<span class="chip" onclick="document.getElementById('homesearch').value='${c}';doSearch()">${c}</span>`).join('')}
-    </div>
-    <div style="margin-top:16px"><button class="btn btn-outline" onclick="navigate('/explore')">EXPLORE SERVICES</button></div>
-  </div></section>
-
-  <section class="section" style="padding-top:0"><div class="container">
-    <div class="h2">Browse by category</div>
-    <div class="grid grid-4" style="margin-top:16px">
-      ${CATEGORIES.slice(0,8).map(c=>`<div class="card catcard" onclick="navigate('/explore?category=${encodeURIComponent(c)}')"><strong>${c}</strong></div>`).join('')}
-    </div>
-  </div></section>
-
-  <section class="section" style="padding-top:0"><div class="container">
-    <div class="h2">Popular services in ${state.location.city}</div>
-    <div class="grid grid-3" style="margin-top:16px">${popular.map(serviceCard).join('')}</div>
-  </div></section>
-
-  <section class="section" style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)"><div class="container">
-    <div class="h2">CivicPath™</div>
-    <p class="sub">Not just a government directory.</p>
-    <div class="grid grid-2" style="margin-top:20px">
-      <div class="card" style="padding:20px">
-        <strong style="color:var(--sub)">TRADITIONAL</strong>
-        <div class="sub" style="margin-top:8px;line-height:2.1">Search ↓<br>Multiple websites ↓<br>Find department ↓<br>Understand requirements ↓<br>Figure out dependencies ↓<br>Apply</div>
-      </div>
-      <div class="card" style="padding:20px;border-color:var(--primary)">
-        <strong style="color:var(--primary)">CIVICFLOW</strong>
-        <div class="sub" style="margin-top:8px;line-height:2.1;color:var(--text)">Your goal ↓<br>Location ↓<br>Applicable service ↓<br>Dependencies ↓<br>Personalized CivicPath ↓<br>Official portal</div>
-      </div>
-    </div>
-    <button class="btn btn-primary" style="margin-top:20px" onclick="navigate('/civicpath?goal=food-business')">See how CivicPath works</button>
-  </div></section>
-
-  <section class="section"><div class="container">
-    <div class="h2">SAME GOAL. DIFFERENT CIVIC PATH.</div>
-    <p class="sub">Goal: “I want to start a food business.” Change the location below — watch the authority and requirements change.</p>
-    <div style="display:flex;gap:8px;margin:14px 0">
-      ${LOCATIONS.map((l,i)=>`<button class="fbtn ${l.city===state.location.city?'active':''}" onclick="setLocation(LOCATIONS[${i}])">${l.city}, ${l.state}</button>`).join('')}
-    </div>
-    <div id="demoPath"></div>
-  </div></section>
-  `);
+// ================================================================
+// BOOTSTRAP
+// ================================================================
+async function boot() {
+  applyTheme();
+  updateCityLabel();
+  await Promise.all([loadCategories(), loadCities()]);
+  if (S.token) await restoreUser();
+  else updateAuthUI();
+  if (!S.city) setTimeout(openCityPicker, 800);
+  handleHashRoute();
+  loadHomeServices();
 }
 
-function doSearch(){
-  const q = document.getElementById('homesearch').value;
-  navigate('/explore?q='+encodeURIComponent(q));
+async function loadCategories() {
+  try {
+    const data = await api('/api/categories');
+    S.categories = data.categories || [];
+    renderQuickCats();
+    renderExploreFilters();
+  } catch(e) { console.warn('categories:', e.message); }
 }
 
-function matchService(q,s){
-  q=q.toLowerCase();
-  const hay = (s.name+' '+s.category+' '+s.desc).toLowerCase();
-  if(hay.includes(q))return true;
-  if(q.includes('food')||q.includes('restaurant'))return s.name.includes('Food');
-  if(q.includes('licence')||q.includes('license')||q.includes('drive'))return s.name.includes('Driving');
-  if(q.includes('birth')||q.includes('proof of birth'))return s.name.includes('Birth');
-  if(q.includes('business')&&!q.includes('food'))return s.name.includes('Business Registration');
-  if(q.includes('tax'))return s.name.includes('Property Tax');
-  return false;
+async function loadCities() {
+  try {
+    const data = await api('/api/cities');
+    S.cities = data.cities || [];
+    renderCityGrid();
+  } catch(e) { console.warn('cities:', e.message); }
 }
 
-function exploreView(params){
-  const q = params.get('q')||'';
-  const cat = params.get('category')||'';
-  let results = SERVICES.filter(s=>s.city===state.location.city);
-  if(cat) results = results.filter(s=>s.category===cat);
-  if(q) results = results.filter(s=>matchService(q,s));
-  return layout(`
-  <section class="section"><div class="container">
-    <div class="h2">Explore Government Services</div>
-    <p class="sub">Find the service you need without knowing which department handles it.</p>
-    <div class="searchbox" style="max-width:560px;margin:16px 0">
-      <input id="exsearch" value="${q}" placeholder="Search services..." onkeydown="if(event.key==='Enter')navigate('/explore?q='+encodeURIComponent(this.value))">
-      <button class="btn btn-primary" onclick="navigate('/explore?q='+encodeURIComponent(document.getElementById('exsearch').value))">Search</button>
-    </div>
-    <div class="filtergroup"><h4>Category</h4>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <span class="chip ${!cat?'active':''}" onclick="navigate('/explore')">All</span>
-        ${CATEGORIES.map(c=>`<span class="chip ${cat===c?'active':''}" onclick="navigate('/explore?category=${encodeURIComponent(c)}')">${c}</span>`).join('')}
-      </div>
-    </div>
-    <p class="sub"><strong>${results.length}</strong> service${results.length!==1?'s':''} found in ${state.location.city}, ${state.location.state}</p>
-    ${results.length? `<div class="grid grid-3">${results.map(serviceCard).join('')}</div>` :
-      `<div class="card" style="padding:30px;text-align:center"><strong>No services found.</strong><div class="sub">Try a different search or change your location.</div></div>`}
-  </div></section>`);
+async function restoreUser() {
+  try {
+    const data = await api('/api/me');
+    S.user = data.user;
+    updateAuthUI();
+    if (S.user.cityPreference && !S.city) {
+      S.city = S.user.cityPreference;
+      localStorage.setItem('cf_city', S.city);
+      updateCityLabel();
+    }
+  } catch(e) {
+    S.token = null;
+    S.user = null;
+    localStorage.removeItem('cf_token');
+    updateAuthUI();
+  }
 }
 
-function serviceView(id){
-  const s = SERVICES.find(x=>x.id===id);
-  if(!s) return layout(`<div class="container section"><p>Service not found.</p></div>`);
-  const isSaved = state.saved.includes(s.id);
-  return layout(`
-  <div class="container section">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
-      <div><div class="h2">${s.name}</div>
-      <p class="sub">${s.city}, ${s.state} · ${s.level} Service · ${s.authority}</p></div>
-      <span style="font-weight:600;font-size:13px;color:${s.sourceStatus==='verified'?'var(--success)':'var(--warn)'}">${s.sourceStatus==='verified'?'✓ VERIFIED OFFICIAL SOURCE':'⚠ NEEDS VERIFICATION'}</span>
-    </div>
-    <div class="grid" style="grid-template-columns:2fr 1fr;margin-top:20px;gap:20px" >
-      <div>
-        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Overview</strong><p class="sub">${s.desc}</p></div>
-        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Who is this for?</strong><p class="sub">${s.eligibility}</p></div>
-        <div class="card" style="padding:20px;margin-bottom:16px"><strong>Documents Required</strong><ul class="sub">${s.docs.map(d=>`<li>${d}</li>`).join('')}</ul></div>
-        <div class="card" style="padding:20px"><strong>Prerequisites & Dependencies</strong>
-          <p class="sub">${s.prereqs.length?'Prerequisites: '+s.prereqs.join(', '):'No prerequisites.'}</p>
-          <p class="sub">${s.dependencies.length?'Dependencies: '+s.dependencies.join(', '):'No further dependencies.'}</p></div>
-      </div>
-      <div>
-        <div class="card" style="padding:18px;margin-bottom:16px">
-          <div class="sub">Fees</div><strong>${s.fee}</strong>
-          <div class="sub" style="margin-top:10px">Last Verified</div><strong>${s.sourceStatus==='verified'?'Sept 2026':'Pending'}</strong>
-          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="navigate('/civicpath?goal=business-registration')">BUILD MY CIVICPATH</button>
-          ${s.officialUrl? `<a href="${s.officialUrl}" target="_blank"><button class="btn btn-outline" style="width:100%;margin-top:8px">OPEN OFFICIAL PORTAL ↗</button></a>`
-            : `<button class="btn btn-outline" style="width:100%;margin-top:8px" disabled title="Official portal link pending verification.">Official portal link pending verification</button>`}
-          <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="toggleSave('${s.id}')">${isSaved?'★ Saved (remove)':'☆ Save Service'}</button>
-        </div>
-      </div>
-    </div>
-  </div>`);
+function updateAuthUI() {
+  const loggedIn = !!S.user;
+  document.getElementById('auth-login-btn').classList.toggle('hidden', loggedIn);
+  document.getElementById('auth-avatar').classList.toggle('hidden', !loggedIn);
+  document.getElementById('ai-fab').classList.toggle('hidden', !loggedIn);
+  if (S.user) {
+    const initials = S.user.name ? S.user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : '?';
+    document.getElementById('auth-avatar').textContent = initials;
+  }
 }
-async function toggleSave(id){
 
-  if(!state.user || state.user.guest){
+// ================================================================
+// CITY
+// ================================================================
+function renderCityGrid() {
+  const grid = document.getElementById('city-grid');
+  const cityDefs = [
+    { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', emoji: '🌊' },
+    { slug: 'ahmedabad', name: 'Ahmedabad', state: 'Gujarat', emoji: '🏛️' },
+    { slug: 'bengaluru', name: 'Bengaluru', state: 'Karnataka', emoji: '🌿' },
+  ];
+  grid.innerHTML = cityDefs.map(c => `
+    <div class="city-option${S.pendingCitySlug===c.slug?' selected':''}" onclick="selectCity('${c.slug}',this)">
+      <span class="city-emoji">${c.emoji}</span>
+      <div class="city-name">${c.name}</div>
+      <div class="city-state">${c.state}</div>
+    </div>`).join('');
+}
 
-    alert(
-      'Please create an account to save services.'
-    );
+function selectCity(slug, el) {
+  S.pendingCitySlug = slug;
+  document.querySelectorAll('.city-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
 
+function confirmCitySelection() {
+  if (!S.pendingCitySlug) { toast('Please select a city', 'error'); return; }
+  S.city = S.pendingCitySlug;
+  localStorage.setItem('cf_city', S.city);
+  updateCityLabel();
+  closeModal('city-modal');
+  toast(`City set to ${S.city.charAt(0).toUpperCase()+S.city.slice(1)} 🏙️`, 'success');
+  loadHomeServices();
+  if (S.currentView === 'explore') loadExplore();
+}
+
+function updateCityLabel() {
+  const label = document.getElementById('city-label');
+  const cityNames = { mumbai:'Mumbai', ahmedabad:'Ahmedabad', bengaluru:'Bengaluru' };
+  label.textContent = S.city ? cityNames[S.city] || S.city : 'Select City';
+  const sub = document.getElementById('hero-sub');
+  if (sub && S.city) sub.textContent = `Government services for ${cityNames[S.city]} residents.`;
+}
+
+function openCityPicker() {
+  S.pendingCitySlug = S.city;
+  renderCityGrid();
+  openModal('city-modal');
+}
+
+// ================================================================
+// THEME
+// ================================================================
+function applyTheme() {
+  const t = localStorage.getItem('cf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('theme-btn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('cf_theme', next);
+  document.getElementById('theme-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+// ================================================================
+// MODAL HELPERS
+// ================================================================
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop:not(.hidden)').forEach(m => m.classList.add('hidden')); });
+
+// ================================================================
+// AUTH
+// ================================================================
+function openAuth(mode) {
+  S.authMode = mode;
+  switchAuthTab(mode);
+  openModal('auth-modal');
+}
+
+function switchAuthTab(mode) {
+  S.authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode==='login');
+  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
+  document.getElementById('field-name').style.display = mode === 'signup' ? '' : 'none';
+  document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-error').classList.add('hidden');
+}
+
+async function submitAuth(e) {
+  e.preventDefault();
+  const btn = document.getElementById('auth-submit-btn');
+  const errEl = document.getElementById('auth-error');
+  errEl.classList.add('hidden');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:16px;height:16px"></div>';
+  try {
+    const body = {
+      email: document.getElementById('auth-email').value.trim(),
+      password: document.getElementById('auth-password').value,
+    };
+    if (S.authMode === 'signup') body.name = document.getElementById('auth-name').value.trim();
+    const data = await api(`/api/${S.authMode}`, { method: 'POST', body: JSON.stringify(body) });
+    S.token = data.token;
+    S.user = data.user;
+    localStorage.setItem('cf_token', S.token);
+    updateAuthUI();
+    closeModal('auth-modal');
+    toast(`Welcome${S.user.name ? ', '+S.user.name : ''}! 👋`, 'success');
+    if (S.currentView === 'documents') loadDocuments();
+    if (S.currentView === 'myservices') loadMyServices();
+  } catch(err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = S.authMode === 'login' ? 'Sign In' : 'Create Account';
+  }
+}
+
+function continueAsGuest() {
+  closeModal('auth-modal');
+  toast('Browsing as guest — sign in to save services and documents');
+}
+
+function logout() {
+  S.token = null; S.user = null;
+  localStorage.removeItem('cf_token');
+  updateAuthUI();
+  closeModal('user-menu-modal');
+  toast('Signed out');
+  navigate('home');
+}
+
+function showUserMenu() {
+  if (!S.user) return openAuth('login');
+  const initials = S.user.name ? S.user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) : '?';
+  document.getElementById('menu-avatar').textContent = initials;
+  document.getElementById('menu-name').textContent = S.user.name || '';
+  document.getElementById('menu-email').textContent = S.user.email || '';
+  const cityEl = document.getElementById('menu-city');
+  const cityNames = { mumbai:'Mumbai', ahmedabad:'Ahmedabad', bengaluru:'Bengaluru' };
+  cityEl.textContent = S.city ? '📍 ' + (cityNames[S.city] || S.city) : '';
+  document.getElementById('admin-link-btn').classList.toggle('hidden', !S.user.isAdmin);
+  openModal('user-menu-modal');
+}
+
+// ================================================================
+// HOME
+// ================================================================
+function renderQuickCats() {
+  const el = document.getElementById('quick-cats');
+  el.innerHTML = S.categories.slice(0, 10).map(c =>
+    `<button class="cat-chip" onclick="quickCatFilter('${c.slug}','${c.name}')">${c.icon||'📋'} ${c.name}</button>`
+  ).join('');
+}
+
+function quickCatFilter(slug, name) {
+  navigate('explore');
+  S.exploreCategory = slug;
+  S.exploreOffset = 0;
+  S.exploreQuery = '';
+  document.getElementById('explore-search').value = '';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  const btn = document.querySelector(`.filter-chip[data-cat="${slug}"]`);
+  if (btn) btn.classList.add('active');
+  loadExplore();
+}
+
+let homeSearchTimer;
+function handleHomeSearch(val) {
+  clearTimeout(homeSearchTimer);
+  if (!val.trim()) {
+    document.getElementById('home-search-results').classList.add('hidden');
+    document.getElementById('home-main').classList.remove('hidden');
     return;
   }
+  document.getElementById('home-main').classList.add('hidden');
+  document.getElementById('home-search-results').classList.remove('hidden');
+  const grid = document.getElementById('search-results-grid');
+  grid.innerHTML = '<div class="spinner"></div>';
+  homeSearchTimer = setTimeout(async () => {
+    try {
+      const params = new URLSearchParams({ q: val, limit: 12 });
+      if (S.city) params.set('city', S.city);
+      const data = await api(`/api/services?${params}`);
+      grid.innerHTML = renderServiceCards(data.services || []);
+    } catch(e) { grid.innerHTML = `<p class="text-sub">${e.message}</p>`; }
+  }, 350);
+}
 
-  const token =
-    localStorage.getItem('cf_token');
-
-  const alreadySaved =
-    state.saved.includes(id);
-
-
+async function loadHomeServices() {
+  const grid = document.getElementById('home-services-grid');
+  grid.innerHTML = '<div class="card" style="text-align:center;padding:2rem;grid-column:1/-1"><div class="spinner"></div></div>';
   try {
-
-    if(alreadySaved){
-
-      const response =
-        await fetch(
-          `/api/saved/${encodeURIComponent(id)}`,
-          {
-            method: 'DELETE',
-
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
-          }
-        );
-
-      if(!response.ok){
-        alert('Could not remove saved service.');
-        return;
-      }
-
-      state.saved =
-        state.saved.filter(
-          x => x !== id
-        );
-
+    const params = new URLSearchParams({ limit: 6, verified: 'true' });
+    if (S.city) params.set('city', S.city);
+    const data = await api(`/api/services?${params}`);
+    const services = data.services || [];
+    if (services.length === 0) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏙️</div><h3>Select your city</h3><p>Choose a city to see available services.</p><button class="btn btn-primary mt-4" onclick="openCityPicker()">Pick City</button></div>';
     } else {
-
-      const response =
-        await fetch(
-          `/api/saved/${encodeURIComponent(id)}`,
-          {
-            method: 'POST',
-
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
-          }
-        );
-
-      if(!response.ok){
-        alert('Could not save service.');
-        return;
-      }
-
-      state.saved.push(id);
-
+      grid.innerHTML = renderServiceCards(services);
     }
-
-    render();
-
-  } catch(error){
-
-    console.error(error);
-
-    alert(
-      'Unable to connect to server.'
-    );
-
+  } catch(e) {
+    grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--danger)">${e.message}</div>`;
   }
-
-}
-function whatNowPanel(nodes,goalKey){
-  const avail = nodes.filter(n=>n.status==='AVAILABLE');
-  const blocked = nodes.filter(n=>n.status==='BLOCKED');
-  return `<div class="card" style="padding:20px;margin-bottom:20px;border-color:var(--primary)">
-    <strong>WHAT CAN I DO RIGHT NOW?</strong>
-    <p class="sub">${avail.length} action${avail.length!==1?'s':''} available now</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
-      ${avail.map(n=>`<button class="btn btn-primary" onclick="markComplete('${goalKey}','${n.id}')">Start ${n.title}</button>`).join('') || '<span class="sub">No actions available yet — complete a prerequisite first.</span>'}
-    </div>
-    ${blocked.length?`<p class="sub" style="margin-top:10px"><strong>Blocked:</strong> ${blocked.map(n=>n.title+' — requires '+(nodes.find(x=>x.id===n.requires)?.title||'a prior step')).join('; ')}</p>`:''}
-  </div>`;
-}
-async function markComplete(goalKey,id){
-
-  if(!state.user || state.user.guest){
-
-    alert(
-      'Please login to track your CivicPath.'
-    );
-
-    return;
-  }
-
-  const token =
-    localStorage.getItem('cf_token');
-
-
-  try {
-
-    const response =
-      await fetch('/api/progress', {
-
-        method: 'POST',
-
-        headers: {
-
-          'Content-Type':
-            'application/json',
-
-          Authorization:
-            `Bearer ${token}`
-
-        },
-
-        body: JSON.stringify({
-
-          goal: goalKey,
-
-          stepId: id,
-
-          state:
-            state.location.state
-
-        })
-
-      });
-
-
-    if(!response.ok){
-
-      const data =
-        await response.json();
-
-      alert(
-        data.message ||
-        'Could not save progress.'
-      );
-
-      return;
-    }
-
-
-    await CFAuth.loadUserData();
-
-    render();
-
-
-  } catch(error){
-
-    console.error(error);
-
-    alert(
-      'Unable to connect to server.'
-    );
-
-  }
-
 }
 
-function civicPathView(params){
-  const goal = params.get('goal') || 'food-business';
-  const nodes = buildCivicPath(goal,state.location);
-  const done = nodes.filter(n=>n.status==='COMPLETED').length;
-  return layout(`
-  <div class="container section">
-    <div class="h2">Your CivicPath™</div>
-    <p class="sub">Your personalized path through government.</p>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:10px 0 20px">
-      <span class="tag">Goal: ${goal==='food-business'?'Start a food business':'Business registration'}</span>
-      <span class="pill">📍 ${state.location.city}, ${state.location.state}
-        <select onchange="setLocation(LOCATIONS[this.value]);navigate('/civicpath?goal=${goal}')" style="border:none;background:transparent;color:var(--sub);font-size:12px">
-          ${LOCATIONS.map((l,i)=>`<option value="${i}" ${l.city===state.location.city?'selected':''}>${l.city}</option>`).join('')}
-        </select>
-      </span>
-      <span class="sub">${done}/${nodes.length} completed</span>
-    </div>
-    <div class="progressbar" style="margin-bottom:24px"><div style="width:${done/nodes.length*100}%"></div></div>
-    ${whatNowPanel(nodes,goal)}
-    <div class="flowcol">
-      ${nodes.map((n,i)=>`
-        <div class="node" onclick='openNode(${JSON.stringify(JSON.stringify(n))},"${goal}")'>
-          <span class="st" style="background:${STATUS_COLOR[n.status]}"></span>
-          <div><strong>${STATUS_ICON[n.status]} ${n.title}</strong><div class="sub" style="font-size:12px">${n.status}${n.status==='CONDITIONAL'?' — depends on your circumstances':''}</div></div>
+function renderServiceCards(services) {
+  if (!services.length) return '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🔍</div><h3>No services found</h3><p>Try a different search or city.</p></div>';
+  return services.map(s => `
+    <div class="service-card" onclick="openServiceDetail('${s.id}')">
+      <div class="service-card-top">
+        <div>
+          <div class="service-card-title">${s.name}</div>
+          <div class="service-card-auth">${s.authority_name||''}</div>
         </div>
-        ${i<nodes.length-1?'<div class="arrow">↓</div>':''}
-      `).join('')}
-    </div>
-  </div>`);
+        <span class="service-card-icon">${getCategoryIcon(s.category_name)}</span>
+      </div>
+      <div class="service-card-meta">
+        ${s.online ? '<span class="badge badge-success">Online</span>' : ''}
+        ${s.offline ? '<span class="badge badge-sub">Offline</span>' : ''}
+        ${getVerificationBadge(s.verification_status)}
+      </div>
+      ${s.description ? `<p class="text-xs text-sub mt-2" style="line-height:1.4">${s.description.slice(0,90)}${s.description.length>90?'…':''}</p>` : ''}
+    </div>`).join('');
 }
-function openNode(nStr,goal){
-  const n = JSON.parse(nStr);
-  document.getElementById('drawer').innerHTML = `
-    <button class="iconbtn" onclick="closeDrawer()" style="float:right">✕</button>
-    <h3 style="margin-top:30px">${n.title}</h3>
-    <span class="tag" style="background:${STATUS_COLOR[n.status]}22;color:${STATUS_COLOR[n.status]};border-color:${STATUS_COLOR[n.status]}">${n.status}</span>
-    <p class="sub" style="margin-top:14px"><strong>Why it exists:</strong> ${n.why}</p>
-    ${n.requires?`<p class="sub"><strong>Prerequisite:</strong> ${n.requires}</p>`:''}
-    <p class="sub"><strong>Documents:</strong> ${n.docs.join(', ')}</p>
-    <p class="sub"><strong>Authority:</strong> ${n.authority}</p>
-    <p class="sub"><strong>Official source:</strong> ${n.officialUrl?`<a href="${n.officialUrl}" target="_blank" style="color:var(--primary)">Open portal ↗</a>`:'Pending verification'}</p>
-    ${n.status==='AVAILABLE'?`<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="markComplete('${goal}','${n.id}');closeDrawer()">Mark as complete</button>`:''}
-  `;
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 
-function dashboardView(){
-  const goals = [{key:'food-business',label:'Start a Food Business'},{key:'business-registration',label:'Business Registration'}];
-  return layout(`<div class="container section">
-    <div class="h2">Your Civic Journeys</div>
-    <div class="grid grid-2" style="margin-top:16px">
-      ${goals.map(g=>{
-        const nodes = buildCivicPath(g.key,state.location);
-        const done = nodes.filter(n=>n.status==='COMPLETED').length;
-        const next = nodes.find(n=>n.status==='AVAILABLE');
-        return `<div class="card" style="padding:20px">
-          <strong>${g.label}</strong><div class="sub">${state.location.city}, ${state.location.state}</div>
-          <div class="progressbar" style="margin:10px 0"><div style="width:${done/nodes.length*100}%"></div></div>
-          <div class="sub">${done}/${nodes.length} steps completed</div>
-          ${next?`<div class="sub">Next: ${next.title}</div>`:''}
-          <button class="btn btn-outline" style="margin-top:10px" onclick="navigate('/civicpath?goal=${g.key}')">Continue CivicPath</button>
-        </div>`;
+function getCategoryIcon(cat) {
+  const icons = { 'Identity & Residence':'🪪', 'Property & Land':'🏠', 'Business & Trade':'💼', 'Health & Medical':'🏥', 'Education':'🎓', 'Transport & Vehicles':'🚗', 'Social Welfare':'🤝', 'Utilities':'💡', 'Taxation':'💰', 'Legal & Courts':'⚖️' };
+  return icons[cat] || '📋';
+}
+
+function getVerificationBadge(status) {
+  if (status === 'VERIFIED') return '<span class="badge badge-success">✓ Verified</span>';
+  if (status === 'NEEDS_VERIFICATION') return '<span class="badge badge-warn">⚠ Unverified</span>';
+  if (status === 'OUTDATED') return '<span class="badge badge-danger">Outdated</span>';
+  return '';
+}
+
+// ================================================================
+// EXPLORE
+// ================================================================
+function renderExploreFilters() {
+  const el = document.getElementById('explore-filters');
+  const allBtn = '<button class="filter-chip active" data-cat="" onclick="setExploreFilter(this,\'\')">All</button>';
+  const catBtns = S.categories.map(c =>
+    `<button class="filter-chip" data-cat="${c.slug}" onclick="setExploreFilter(this,'${c.slug}')">${c.icon||''} ${c.name}</button>`
+  ).join('');
+  el.innerHTML = allBtn + catBtns;
+}
+
+function setExploreFilter(el, cat) {
+  document.querySelectorAll('#explore-filters .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  S.exploreCategory = cat;
+  S.exploreOffset = 0;
+  loadExplore();
+}
+
+let exploreSearchTimer;
+function handleExploreSearch(val) {
+  clearTimeout(exploreSearchTimer);
+  S.exploreQuery = val;
+  S.exploreOffset = 0;
+  exploreSearchTimer = setTimeout(loadExplore, 350);
+}
+
+async function loadExplore() {
+  const grid = document.getElementById('explore-grid');
+  grid.innerHTML = '<div class="card" style="text-align:center;padding:2rem;grid-column:1/-1"><div class="spinner"></div></div>';
+  try {
+    const params = new URLSearchParams({ limit: 20, offset: S.exploreOffset });
+    if (S.city) params.set('city', S.city);
+    if (S.exploreCategory) params.set('category', S.exploreCategory);
+    if (S.exploreQuery) params.set('q', S.exploreQuery);
+    const data = await api(`/api/services?${params}`);
+    const services = data.services || [];
+    S.exploreTotal = data.total || 0;
+    if (S.exploreOffset === 0) {
+      grid.innerHTML = renderServiceCards(services);
+    } else {
+      grid.insertAdjacentHTML('beforeend', renderServiceCards(services));
+    }
+    const hasMore = (S.exploreOffset + services.length) < S.exploreTotal;
+    document.getElementById('explore-more-wrap').classList.toggle('hidden', !hasMore);
+  } catch(e) {
+    grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--danger)">${e.message}</div>`;
+  }
+}
+
+function loadMoreExplore() {
+  S.exploreOffset += 20;
+  loadExplore();
+}
+
+// ================================================================
+// SERVICE DETAIL
+// ================================================================
+function openServiceDetail(serviceId) {
+  navigate('detail', serviceId);
+}
+
+async function loadServiceDetail(serviceId) {
+  S.currentService = null;
+  document.getElementById('detail-loading').classList.remove('hidden');
+  document.getElementById('detail-header-content').classList.add('hidden');
+  document.getElementById('detail-body').innerHTML = '';
+  try {
+    const data = await api(`/api/services/${serviceId}`);
+    const svc = data.service;
+    S.currentService = svc;
+    // Header
+    document.getElementById('detail-header-content').innerHTML = `
+      <div class="flex items-center gap-2" style="flex-wrap:wrap">
+        ${getVerificationBadge(svc.verification_status)}
+        ${svc.online?'<span class="badge" style="background:rgba(255,255,255,.2);color:#fff">Online</span>':''}
+        ${svc.offline?'<span class="badge" style="background:rgba(255,255,255,.2);color:#fff">Offline</span>':''}
+      </div>
+      <h2 class="mt-2">${svc.name}</h2>
+      <div class="authority mt-1">${svc.authority_name||''} ${svc.city_name ? '· '+svc.city_name : ''}</div>
+    `;
+    document.getElementById('detail-loading').classList.add('hidden');
+    document.getElementById('detail-header-content').classList.remove('hidden');
+    // Body
+    const body = document.getElementById('detail-body');
+    let html = '';
+    // Description + quick actions
+    html += `<div class="detail-card">
+      ${svc.description ? `<p class="text-sm" style="line-height:1.6;margin-bottom:1rem">${svc.description}</p>` : ''}
+      <div class="flex gap-2" style="flex-wrap:wrap">
+        ${svc.official_url ? `<a href="${svc.official_url}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">🌐 ${svc.official_portal_name||'Official Portal'}</a>` : ''}
+        ${(svc.steps||[]).length ? `<button class="btn btn-outline btn-sm" onclick="openCivicPath('${svc.id}')">🗺 CivicPath</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="toggleSave('${svc.id}')" id="save-btn-${svc.id}">☆ Save</button>
+      </div>
+    </div>`;
+    // Readiness engine
+    if ((svc.documents||[]).length) {
+      html += renderReadiness(svc);
+    }
+    // Eligibility
+    if (svc.eligibility) {
+      html += `<div class="detail-card">
+        <div class="detail-section-title">✅ Eligibility</div>
+        <p class="text-sm" style="line-height:1.6">${svc.eligibility}</p>
+      </div>`;
+    }
+    // Fees
+    if ((svc.fees||[]).length) {
+      html += `<div class="detail-card">
+        <div class="detail-section-title">💰 Fees</div>
+        ${svc.fees.map(f=>`<div class="flex justify-between text-sm" style="padding:.35rem 0;border-bottom:1px solid var(--border)"><span>${f.fee_description||f.fee_type||'Fee'}</span><span class="font-semibold">${f.fee_amount ? '₹'+f.fee_amount : 'N/A'}</span></div>`).join('')}
+      </div>`;
+    }
+    // Processing time
+    if ((svc.processing_times||[]).length) {
+      const pt = svc.processing_times[0];
+      html += `<div class="detail-card">
+        <div class="detail-section-title">⏱ Processing Time</div>
+        <p class="text-sm font-semibold">${pt.processing_time_text||`${pt.processing_time_value} ${pt.processing_time_unit}`}</p>
+      </div>`;
+    }
+    // FAQs
+    if ((svc.faqs||[]).length) {
+      html += `<div class="detail-card">
+        <div class="detail-section-title">❓ FAQs</div>
+        ${svc.faqs.map(f=>`<details style="margin-bottom:.5rem"><summary class="text-sm font-semibold" style="cursor:pointer;padding:.4rem 0">${f.question}</summary><p class="text-sm text-sub" style="padding:.5rem 0;line-height:1.6">${f.answer}</p></details>`).join('')}
+      </div>`;
+    }
+    // Steps preview
+    if ((svc.steps||[]).length) {
+      html += `<div class="detail-card">
+        <div class="detail-section-title">🗺 CivicPath — ${svc.steps.length} Steps</div>
+        <div class="path-timeline">
+          ${svc.steps.slice(0,3).map((st,i) => `
+            <div class="path-step">
+              <div class="step-dot">${i+1}</div>
+              <div class="step-body">
+                <div class="step-title">${st.title}</div>
+                ${st.estimated_duration?`<div class="step-duration">⏱ ${st.estimated_duration}</div>`:''}
+              </div>
+            </div>`).join('')}
+          ${svc.steps.length>3?`<div class="text-sm text-sub" style="margin-left:2.5rem">+${svc.steps.length-3} more steps</div>`:''}
+        </div>
+        <button class="btn btn-primary btn-sm mt-4 w-full" onclick="openCivicPath('${svc.id}')">Start CivicPath →</button>
+      </div>`;
+    }
+    // Ask AI
+    if (S.user) {
+      html += `<div class="detail-card" style="text-align:center">
+        <p class="text-sm text-sub">Have questions about this service?</p>
+        <button class="btn btn-outline btn-sm mt-2" onclick="openAIForService('${svc.id}','${svc.name.replace(/'/g,"\\'")}')">🤖 Ask CivicAI</button>
+      </div>`;
+    }
+    body.innerHTML = html;
+    checkSaveState(svc.id);
+  } catch(e) {
+    document.getElementById('detail-loading').innerHTML = `<p style="color:#fff">${e.message}</p>`;
+  }
+}
+
+function renderReadiness(svc) {
+  const myDocTypes = S.myDocs.map(d => d.document_type_id).filter(Boolean);
+  const docs = svc.documents || [];
+  const required = docs.filter(d => d.required);
+  const have = required.filter(d => myDocTypes.includes(d.document_type_id));
+  const pct = required.length ? Math.round((have.length / required.length) * 100) : 0;
+  return `<div class="detail-card">
+    <div class="detail-section-title">📋 Document Readiness — ${pct}%</div>
+    <div class="readiness-bar"><div class="readiness-fill" style="width:${pct}%"></div></div>
+    <div style="margin-top:.75rem;display:flex;flex-wrap:wrap">
+      ${docs.map(d => {
+        const has = myDocTypes.includes(d.document_type_id);
+        return `<span class="doc-chip ${has?'have':'missing'}">${has?'✓':'○'} ${d.name}</span>`;
       }).join('')}
     </div>
-    <div class="h2" style="margin-top:30px">Saved Services</div>
-    ${state.saved.length?`<div class="grid grid-3" style="margin-top:16px">${state.saved.map(id=>SERVICES.find(s=>s.id===id)).filter(Boolean).map(serviceCard).join('')}</div>`
-      :`<p class="sub">You haven't saved any services yet.</p>`}
-  </div>`);
-}
-function savedView(){
-  return layout(`<div class="container section"><div class="h2">Saved Services</div>
-    ${state.saved.length? `<div class="grid grid-3" style="margin-top:16px">${state.saved.map(id=>SERVICES.find(s=>s.id===id)).filter(Boolean).map(serviceCard).join('')}</div>`
-      : `<p class="sub">You haven't saved any services yet. <a href="#/explore" style="color:var(--primary)">Explore services →</a></p>`}
-  </div>`);
-}
-function aboutView(){
-  return layout(`<div class="container section" style="max-width:760px">
-    <div class="h2">About CivicFlow</div>
-    <p class="sub">CivicFlow is an independent civic-tech navigation platform. Whenever a citizen wants to perform a government-related activity, CivicFlow helps them understand what to do, who handles it, and where the official application lives — instead of searching disconnected government websites.</p>
-    <p class="sub"><strong>CivicPath™</strong> is a personalized, location-aware sequence of steps generated from your goal, your jurisdiction, and dependencies between steps — not a static checklist. The same goal produces a different path in a different state, because authorities, requirements and portals differ by jurisdiction.</p>
-    <p class="sub"><strong>Disclaimer:</strong> CivicFlow does not represent or replace any government department. Official government portals remain the final authority for applications, fees, eligibility, requirements and decisions.</p>
-  </div>`);
-}
-
-/* ---------- ASSISTANT ---------- */
-function toggleAssistant(){
-  const p = document.getElementById('assistantPanel');
-  p.classList.toggle('open');
-  if(p.classList.contains('open')) renderAssistant();
-}
-function renderAssistant(){
-  const p = document.getElementById('assistantPanel');
-  p.innerHTML = `
-  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-    <div><strong>Civic Assistant</strong><div class="sub" style="font-size:12px">Here to help you navigate.</div></div>
-    <button class="iconbtn" onclick="toggleAssistant()">✕</button>
-  </div>
-  <div id="chatlog" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px">${state.chat.map(m=>`<div class="msg ${m.role}">${m.text}</div>`).join('') || '<div class="sub" style="font-size:13px">Ask about your current CivicPath, or tap a suggestion below.</div>'}</div>
-  <div style="padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap">
-    ${['What should I do first?','Why is this blocked?','What documents do I need?','Where do I apply?'].map(q=>`<span class="chip" onclick="askAssistant('${q}')">${q}</span>`).join('')}
-  </div>
-  <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px">
-    <input id="chatinput" placeholder="Type a question..." style="flex:1;border:1px solid var(--border);border-radius:8px;padding:8px;background:var(--bg);color:var(--text)" onkeydown="if(event.key==='Enter'){askAssistant(this.value);this.value=''}">
-    <button class="btn btn-primary" onclick="const i=document.getElementById('chatinput');askAssistant(i.value);i.value=''">Send</button>
+    ${pct < 100 ? `<p class="text-xs text-sub mt-2">Upload missing documents in My Documents to track readiness.</p>` : '<p class="text-xs text-success mt-2">✓ You have all required documents!</p>'}
   </div>`;
 }
-function askAssistant(q){
-  if(!q) return;
-  state.chat.push({role:'user',text:q});
-  const goal='food-business';
-  const nodes = buildCivicPath(goal,state.location);
-  const avail = nodes.filter(n=>n.status==='AVAILABLE');
-  const blocked = nodes.find(n=>n.status==='BLOCKED');
-  let ans;
-  const ql = q.toLowerCase();
-  if(ql.includes('first')||ql.includes('right now')){
-    ans = avail.length? `You currently have ${avail.length} action(s) available: ${avail.map(n=>n.title).join(', ')}. <a href="#/civicpath?goal=${goal}" onclick="toggleAssistant()" style="color:var(--primary)">Open CivicPath</a>` : `Nothing is available yet — check your CivicPath for the current step.`;
-  } else if(ql.includes('block')){
-    ans = blocked? `${blocked.title} is blocked because it requires ${nodes.find(x=>x.id===blocked.requires)?.title} first. <a href="#/civicpath?goal=${goal}" onclick="toggleAssistant()" style="color:var(--primary)">View prerequisite</a>` : `Nothing appears blocked on your current CivicPath.`;
-  } else if(ql.includes('document')){
-    ans = `Documents vary per step — open a step on your CivicPath to see its exact document list. For Business Registration you'll typically need PAN Card, ID Proof and Address Proof.`;
-  } else if(ql.includes('where')||ql.includes('apply')||ql.includes('portal')){
-    ans = `Applications happen on the official government portal linked from each step or service page — CivicFlow never collects applications itself.`;
-  } else {
-    ans = `I don't have enough verified information to answer that. Please check the official source associated with this service.`;
-  }
-  state.chat.push({role:'bot',text:ans});
-  renderAssistant();
-  setTimeout(()=>{const l=document.getElementById('chatlog');if(l)l.scrollTop=l.scrollHeight;},50);
+
+async function checkSaveState(serviceId) {
+  if (!S.token) return;
+  try {
+    const data = await api('/api/saved');
+    const saved = (data.saved||[]).map(s=>s.serviceId||s.service_id||s.id);
+    const btn = document.getElementById(`save-btn-${serviceId}`);
+    if (btn && saved.includes(serviceId)) btn.innerHTML = '★ Saved';
+  } catch(e) {}
 }
 
-/* ---------- RENDER / ROUTER DISPATCH ---------- */
-function render(){
-  const {path,params} = currentRoute();
-  const fab = document.querySelector('.assistant-fab');
-  const isAuthRoute = path==='/login'||path==='/signup';
-  if(!state.user && !isAuthRoute){location.hash='/login';return;}   // hashchange re-renders
-  if(state.user && isAuthRoute){location.hash='/';return;}
-  if(fab) fab.style.display = state.user ? '' : 'none';
-  let html;
-  if(isAuthRoute){
-    document.getElementById('app').innerHTML = authView(path==='/signup'?'signup':'login');
-    document.title = (path==='/signup'?'Sign up':'Log in')+' — CivicFlow';
+async function toggleSave(serviceId) {
+  if (!S.token) { openAuth('login'); return; }
+  const btn = document.getElementById(`save-btn-${serviceId}`);
+  try {
+    const data = await api('/api/saved');
+    const saved = (data.saved||[]).map(s=>s.serviceId||s.service_id||s.id);
+    if (saved.includes(serviceId)) {
+      await api(`/api/saved/${serviceId}`, { method: 'DELETE' });
+      if (btn) btn.innerHTML = '☆ Save';
+      toast('Removed from saved');
+    } else {
+      await api('/api/saved', { method: 'POST', body: JSON.stringify({ serviceId }) });
+      if (btn) btn.innerHTML = '★ Saved';
+      toast('Service saved ⭐', 'success');
+    }
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ================================================================
+// CIVICPATH
+// ================================================================
+function openCivicPath(serviceId) {
+  navigate('civicpath', serviceId);
+}
+
+async function loadCivicPath(serviceId) {
+  document.getElementById('civicpath-steps').innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  document.getElementById('civicpath-readiness').style.display = 'none';
+  try {
+    const data = await api(`/api/services/${serviceId}`);
+    const svc = data.service;
+    S.currentService = svc;
+    document.getElementById('civicpath-title').textContent = svc.name;
+    // Load progress
+    let completedSteps = [];
+    if (S.token) {
+      try {
+        const prog = await api('/api/progress');
+        completedSteps = (prog.progress||[]).filter(p => p.goal === `civicpath-${serviceId}`).map(p => p.step_id);
+      } catch(e) {}
+    }
+    // Readiness
+    if ((svc.documents||[]).length) {
+      document.getElementById('civicpath-readiness').style.display = '';
+      document.getElementById('civicpath-readiness').innerHTML = renderReadiness(svc).replace('<div class="detail-card">','').replace('</div>','');
+    }
+    // Steps
+    const steps = svc.steps || [];
+    if (!steps.length) {
+      document.getElementById('civicpath-steps').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚧</div><h3>Steps coming soon</h3><p>Detailed steps for this service are being verified.</p></div>';
+      return;
+    }
+    let html = '<div class="path-timeline">';
+    steps.forEach((step, idx) => {
+      const isCompleted = completedSteps.includes(step.id);
+      const isActive = !isCompleted && (idx === 0 || completedSteps.includes(steps[idx-1]?.id));
+      const isLocked = !isCompleted && !isActive;
+      const stateClass = isCompleted ? 'completed' : isActive ? 'active' : 'locked';
+      const portalGuide = (svc.portal_guides||[]).find(g => g.step_number === step.step_number);
+      html += `<div class="path-step ${stateClass}" id="step-${step.id}">
+        <div class="step-dot">${isCompleted ? '✓' : step.step_number}</div>
+        <div class="step-body">
+          <div class="step-title">${step.title}</div>
+          ${step.description ? `<div class="step-desc">${step.description}</div>` : ''}
+          ${step.estimated_duration ? `<div class="step-duration">⏱ ${step.estimated_duration}</div>` : ''}
+          ${step.why_needed ? `<details class="mt-2"><summary class="text-xs text-sub" style="cursor:pointer">Why is this needed?</summary><p class="text-xs text-sub" style="padding:.4rem 0;line-height:1.5">${step.why_needed}</p></details>` : ''}
+          ${portalGuide ? renderPortalGuide(portalGuide) : ''}
+          <div class="step-actions">
+            ${!isCompleted && !isLocked ? `<button class="btn btn-primary btn-sm" onclick="markStepDone('${serviceId}','${step.id}')">Mark Done ✓</button>` : ''}
+            ${isCompleted ? `<button class="btn btn-outline btn-sm" onclick="undoStep('${serviceId}','${step.id}')">Undo</button>` : ''}
+            ${step.official_url_hint ? `<a href="${step.official_url_hint}" target="_blank" class="btn btn-outline btn-sm">🌐 Portal</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+    document.getElementById('civicpath-steps').innerHTML = html;
+  } catch(e) {
+    document.getElementById('civicpath-steps').innerHTML = `<p class="text-danger">${e.message}</p>`;
+  }
+}
+
+function renderPortalGuide(guide) {
+  if (!guide.instruction) return '';
+  return `<details class="mt-2" style="background:var(--primary-light);padding:.75rem;border-radius:var(--radius-sm)">
+    <summary class="text-xs font-semibold text-primary" style="cursor:pointer">🖥 Portal Guide: ${guide.title}</summary>
+    <div class="text-xs" style="padding:.5rem 0;line-height:1.6">
+      ${guide.instruction ? `<p>${guide.instruction}</p>` : ''}
+      ${guide.what_to_select ? `<p class="mt-1"><strong>Select:</strong> ${guide.what_to_select}</p>` : ''}
+      ${guide.what_to_enter ? `<p class="mt-1"><strong>Enter:</strong> ${guide.what_to_enter}</p>` : ''}
+      ${guide.common_mistakes ? `<p class="mt-1 text-warn"><strong>⚠ Common mistakes:</strong> ${guide.common_mistakes}</p>` : ''}
+    </div>
+  </details>`;
+}
+
+async function markStepDone(serviceId, stepId) {
+  if (!S.token) { openAuth('login'); return; }
+  try {
+    await api('/api/progress', { method: 'POST', body: JSON.stringify({ goal: `civicpath-${serviceId}`, stepId, serviceId }) });
+    loadCivicPath(serviceId);
+    toast('Step completed! ✓', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function undoStep(serviceId, stepId) {
+  try {
+    await api(`/api/progress/civicpath-${serviceId}/${stepId}`, { method: 'DELETE' });
+    loadCivicPath(serviceId);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ================================================================
+// DOCUMENTS
+// ================================================================
+async function loadDocuments() {
+  if (!S.token) {
+    document.getElementById('documents-list').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><h3>Sign in required</h3><p>Sign in to upload and manage your documents.</p><button class="btn btn-primary mt-4" onclick="openAuth(\'login\')">Sign In</button></div>';
     return;
   }
-  document.title = 'CivicFlow — Your path through government, made simple';
-  if(path==='/'||path==='') html = homeView();
-  else if(path==='/explore') html = exploreView(params);
-  else if(path.startsWith('/services/')) html = serviceView(path.split('/services/')[1]);
-  else if(path==='/civicpath') html = civicPathView(params);
-  else if(path==='/dashboard') html = dashboardView();
-  else if(path==='/saved') html = savedView();
-  else if(path==='/about') html = aboutView();
-  else html = layout(`<div class="container section"><p class="sub">Page not found.</p><a href="#/" style="color:var(--primary)">Go home</a></div>`);
-  document.getElementById('app').innerHTML = html;
-  if(path==='/'||path==='') renderDemoPath();
+  try {
+    const data = await api('/api/documents');
+    S.myDocs = data.documents || [];
+    renderDocumentsList();
+  } catch(e) {
+    document.getElementById('documents-list').innerHTML = `<p class="text-danger">${e.message}</p>`;
+  }
 }
-function renderDemoPath(){
-  const nodes = buildCivicPath('food-business',state.location);
-  const el = document.getElementById('demoPath');
-  if(!el) return;
-  el.innerHTML = `<div class="grid grid-3">${nodes.slice(0,3).map(n=>`
-    <div class="card" style="padding:14px">
-      <span class="tag" style="border-color:${STATUS_COLOR[n.status]};color:${STATUS_COLOR[n.status]}">${n.status}</span>
-      <div style="margin-top:8px"><strong>${n.title}</strong></div>
-      <div class="sub" style="font-size:12px">${n.authority}</div>
+
+function renderDocumentsList() {
+  const el = document.getElementById('documents-list');
+  if (!S.myDocs.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div><h3>No documents yet</h3><p>Upload your documents to track readiness for services.</p><button class="btn btn-primary mt-4" onclick="openUploadModal()">Upload Document</button></div>';
+    return;
+  }
+  el.innerHTML = `<div class="doc-list">${S.myDocs.map(d => `
+    <div class="doc-row">
+      <span class="doc-icon">${getDocIcon(d.mime_type)}</span>
+      <div class="doc-meta">
+        <div class="doc-name">${d.document_name}</div>
+        <div class="doc-size">${d.document_type_name || ''} ${d.file_size ? '· '+formatBytes(d.file_size) : ''}</div>
+      </div>
+      <div class="doc-actions">
+        <button class="btn btn-outline btn-sm" onclick="downloadDoc('${d.id}')">↓</button>
+        <button class="btn btn-outline btn-sm" onclick="deleteDoc('${d.id}')">🗑</button>
+      </div>
     </div>`).join('')}</div>`;
 }
-CFAuth.restore().then(() => {
-  render();
-});
+
+function getDocIcon(mime) {
+  if (!mime) return '📄';
+  if (mime.startsWith('image/')) return '🖼️';
+  if (mime === 'application/pdf') return '📕';
+  return '📄';
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+async function openUploadModal() {
+  if (!S.token) { openAuth('login'); return; }
+  // Load doc types into select
+  try {
+    const data = await api('/api/document-types');
+    const sel = document.getElementById('upload-type');
+    sel.innerHTML = '<option value="">Select type…</option>' + (data.documentTypes||[]).map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  } catch(e) {}
+  openModal('upload-modal');
+}
+
+async function submitUpload(e) {
+  e.preventDefault();
+  const btn = document.getElementById('upload-submit-btn');
+  const errEl = document.getElementById('upload-error');
+  errEl.classList.add('hidden');
+  const file = document.getElementById('upload-file').files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { errEl.textContent = 'File too large (max 10MB)'; errEl.classList.remove('hidden'); return; }
+  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:16px;height:16px"></div> Uploading…';
+  try {
+    const fd = new FormData();
+    fd.append('document', file);
+    fd.append('documentName', document.getElementById('upload-name').value.trim());
+    const typeId = document.getElementById('upload-type').value;
+    if (typeId) fd.append('documentTypeId', typeId);
+    await apiForm('/api/documents', fd);
+    closeModal('upload-modal');
+    document.getElementById('upload-form').reset();
+    toast('Document uploaded ✓', 'success');
+    loadDocuments();
+  } catch(err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Upload Document';
+  }
+}
+
+async function downloadDoc(docId) {
+  try {
+    const data = await api(`/api/documents/${docId}/download`);
+    if (data.url) window.open(data.url, '_blank');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteDoc(docId) {
+  if (!confirm('Delete this document?')) return;
+  try {
+    await api(`/api/documents/${docId}`, { method: 'DELETE' });
+    toast('Document deleted');
+    loadDocuments();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ================================================================
+// MY SERVICES
+// ================================================================
+function setMyServicesTab(tab) {
+  S.msTab = tab;
+  document.getElementById('ms-saved-content').classList.toggle('hidden', tab!=='saved');
+  document.getElementById('ms-journeys-content').classList.toggle('hidden', tab!=='journeys');
+  document.getElementById('ms-tab-saved').classList.toggle('active', tab==='saved');
+  document.getElementById('ms-tab-journeys').classList.toggle('active', tab==='journeys');
+  if (tab === 'saved') loadSavedServices();
+  else loadJourneysInMyServices();
+}
+
+async function loadMyServices() {
+  setMyServicesTab(S.msTab);
+}
+
+async function loadSavedServices() {
+  const el = document.getElementById('ms-saved-content');
+  if (!S.token) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><h3>Sign in to view saved services</h3><button class="btn btn-primary mt-4" onclick="openAuth(\'login\')">Sign In</button></div>'; return; }
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/saved');
+    const saved = data.saved || [];
+    if (!saved.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⭐</div><h3>No saved services</h3><p>Save services to access them quickly.</p></div>'; return; }
+    el.innerHTML = `<div class="saved-list">${saved.map(s => `
+      <div class="service-card" onclick="openServiceDetail('${s.serviceId||s.service_id||s.id}')">
+        <div class="service-card-title">${s.name||s.serviceId||s.service_id||s.id}</div>
+      </div>`).join('')}</div>`;
+  } catch(e) { el.innerHTML = `<p class="text-danger">${e.message}</p>`; }
+}
+
+async function loadJourneysInMyServices() {
+  const el = document.getElementById('ms-journeys-content');
+  if (!S.token) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><h3>Sign in to view journeys</h3><button class="btn btn-primary mt-4" onclick="openAuth(\'login\')">Sign In</button></div>'; return; }
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/journeys');
+    const journeys = data.journeys || [];
+    if (!journeys.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><h3>No active journeys</h3><button class="btn btn-primary mt-4" onclick="navigate(\'journeys\')">Track Application</button></div>'; return; }
+    el.innerHTML = journeys.slice(0,5).map(j => renderJourneyCard(j)).join('');
+  } catch(e) { el.innerHTML = `<p class="text-danger">${e.message}</p>`; }
+}
+
+// ================================================================
+// JOURNEYS
+// ================================================================
+async function loadJourneys() {
+  const el = document.getElementById('journeys-list');
+  if (!S.token) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><h3>Sign in to track applications</h3><button class="btn btn-primary mt-4" onclick="openAuth(\'login\')">Sign In</button></div>'; return; }
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/journeys');
+    const journeys = data.journeys || [];
+    if (!journeys.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><h3>No journeys yet</h3><p>Track your government service applications.</p><button class="btn btn-primary mt-4" onclick="openNewJourneyModal()">+ New Journey</button></div>'; return; }
+    el.innerHTML = journeys.map(j => renderJourneyCard(j)).join('');
+  } catch(e) { el.innerHTML = `<p class="text-danger">${e.message}</p>`; }
+}
+
+function renderJourneyCard(j) {
+  const statusColors = { preparing:'sub', submitted:'primary', under_review:'warn', approved:'success', rejected:'danger', pending_payment:'warn' };
+  const statusLabels = { preparing:'Preparing', submitted:'Submitted', under_review:'Under Review', approved:'Approved ✓', rejected:'Rejected', pending_payment:'Pending Payment' };
+  const color = statusColors[j.self_reported_status] || 'sub';
+  const label = statusLabels[j.self_reported_status] || j.self_reported_status;
+  return `<div class="journey-card">
+    <div class="journey-title">${j.title||'Untitled Journey'}</div>
+    ${j.application_number ? `<div class="journey-service text-sub">Ref: ${j.application_number}</div>` : ''}
+    ${j.notes ? `<div class="text-xs text-sub mt-1">${j.notes.slice(0,80)}${j.notes.length>80?'…':''}</div>` : ''}
+    <div class="journey-status-row">
+      <span class="badge badge-${color}">${label}</span>
+      <div class="flex gap-2">
+        <select class="status-select" onchange="updateJourneyStatus('${j.id}',this.value)">
+          ${['preparing','submitted','under_review','approved','rejected','pending_payment'].map(s=>`<option value="${s}"${s===j.self_reported_status?' selected':''}>${statusLabels[s]}</option>`).join('')}
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="deleteJourney('${j.id}')">🗑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openNewJourneyModal() {
+  if (!S.token) { openAuth('login'); return; }
+  document.getElementById('journey-form').reset();
+  document.getElementById('journey-error').classList.add('hidden');
+  openModal('journey-modal');
+}
+
+async function submitJourney(e) {
+  e.preventDefault();
+  const btn = document.getElementById('journey-submit-btn');
+  const errEl = document.getElementById('journey-error');
+  errEl.classList.add('hidden');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:16px;height:16px"></div>';
+  try {
+    const body = {
+      title: document.getElementById('journey-title').value.trim(),
+      applicationNumber: document.getElementById('journey-number').value.trim(),
+      selfReportedStatus: document.getElementById('journey-status').value,
+      notes: document.getElementById('journey-notes').value.trim(),
+    };
+    if (S.journeyServiceId) body.serviceId = S.journeyServiceId;
+    await api('/api/journeys', { method: 'POST', body: JSON.stringify(body) });
+    closeModal('journey-modal');
+    toast('Journey saved ✓', 'success');
+    if (S.currentView === 'journeys') loadJourneys();
+  } catch(err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Journey';
+  }
+}
+
+async function updateJourneyStatus(journeyId, status) {
+  try {
+    await api(`/api/journeys/${journeyId}`, { method: 'PATCH', body: JSON.stringify({ selfReportedStatus: status }) });
+    toast('Status updated', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteJourney(journeyId) {
+  if (!confirm('Delete this journey?')) return;
+  try {
+    await api(`/api/journeys/${journeyId}`, { method: 'DELETE' });
+    toast('Journey deleted');
+    if (S.currentView === 'journeys') loadJourneys();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ================================================================
+// AI ASSISTANT
+// ================================================================
+function toggleAI() {
+  const panel = document.getElementById('ai-panel');
+  panel.classList.toggle('hidden');
+}
+
+function openAIForService(serviceId, serviceName) {
+  S.currentConversationId = null;
+  const panel = document.getElementById('ai-panel');
+  panel.classList.remove('hidden');
+  const msgs = document.getElementById('ai-messages');
+  msgs.innerHTML = `<div class="ai-msg assistant">I can help you with <strong>${serviceName}</strong>! Ask me about documents needed, steps to follow, fees, or office locations.</div>`;
+  document.getElementById('ai-input').focus();
+}
+
+async function sendAIMessage() {
+  if (!S.token) { openAuth('login'); return; }
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const msgs = document.getElementById('ai-messages');
+  msgs.innerHTML += `<div class="ai-msg user">${escHtml(msg)}</div>`;
+  const typingId = 'ai-typing-' + Date.now();
+  msgs.innerHTML += `<div class="ai-msg assistant" id="${typingId}"><div class="spinner" style="width:14px;height:14px"></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  try {
+    const body = { message: msg };
+    if (S.currentConversationId) body.conversationId = S.currentConversationId;
+    if (S.currentService) body.serviceId = S.currentService.id;
+    if (S.city) body.city = S.city;
+    const data = await api('/api/ai/chat', { method: 'POST', body: JSON.stringify(body) });
+    S.currentConversationId = data.conversationId;
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.innerHTML = data.response || 'Sorry, I could not respond.';
+  } catch(e) {
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.innerHTML = `⚠ ${e.message}`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ================================================================
+// ADMIN
+// ================================================================
+function setAdminTab(tab) {
+  S.adminTab = tab;
+  document.getElementById('admin-services-content').classList.toggle('hidden', tab!=='services');
+  document.getElementById('admin-feedback-content').classList.toggle('hidden', tab!=='feedback');
+  document.getElementById('adm-tab-services').classList.toggle('active', tab==='services');
+  document.getElementById('adm-tab-feedback').classList.toggle('active', tab==='feedback');
+  if (tab === 'services') loadAdminServices();
+  else loadAdminFeedback();
+}
+
+async function loadAdmin() {
+  if (!S.user?.isAdmin) {
+    document.getElementById('view-admin').innerHTML = '<div class="empty-state" style="padding:3rem"><div class="empty-state-icon">🔒</div><h3>Admin access required</h3></div>';
+    return;
+  }
+  setAdminTab('services');
+}
+
+async function loadAdminServices() {
+  const el = document.getElementById('admin-services-content');
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/admin/services?limit=50');
+    const services = data.services || [];
+    el.innerHTML = `<div class="table-wrap"><table class="admin-table">
+      <thead><tr><th>Service</th><th>City</th><th>Status</th><th>Published</th><th>Actions</th></tr></thead>
+      <tbody>${services.map(s=>`
+        <tr>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.city_name||'—'}</td>
+          <td>${getVerificationBadge(s.verification_status)}</td>
+          <td>${s.published?'<span class="badge badge-success">Live</span>':'<span class="badge badge-sub">Draft</span>'}</td>
+          <td style="display:flex;gap:.35rem;flex-wrap:wrap">
+            ${s.verification_status!=='VERIFIED'?`<button class="btn btn-outline btn-sm" onclick="adminVerify('${s.id}')">Verify</button>`:''}
+            ${!s.published?`<button class="btn btn-primary btn-sm" onclick="adminPublish('${s.id}')">Publish</button>`:''}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  } catch(e) { el.innerHTML = `<p class="text-danger">${e.message}</p>`; }
+}
+
+async function loadAdminFeedback() {
+  const el = document.getElementById('admin-feedback-content');
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/admin/feedback?limit=50');
+    const feedbacks = data.feedback || [];
+    if (!feedbacks.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📬</div><h3>No feedback yet</h3></div>'; return; }
+    el.innerHTML = `<div class="flex-col gap-3">${feedbacks.map(f=>`
+      <div class="card">
+        <div class="flex justify-between"><span class="badge badge-sub">${f.feedback_type||'general'}</span><span class="text-xs text-sub">${new Date(f.created_at).toLocaleDateString()}</span></div>
+        <p class="text-sm mt-2">${f.description||'—'}</p>
+      </div>`).join('')}</div>`;
+  } catch(e) { el.innerHTML = `<p class="text-danger">${e.message}</p>`; }
+}
+
+async function adminVerify(serviceId) {
+  try {
+    await api(`/api/admin/services/${serviceId}/verify`, { method: 'POST', body: JSON.stringify({ status: 'VERIFIED', notes: 'Manually verified via admin panel' }) });
+    toast('Marked as verified ✓', 'success');
+    loadAdminServices();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function adminPublish(serviceId) {
+  try {
+    await api(`/api/admin/services/${serviceId}/publish`, { method: 'POST', body: JSON.stringify({ published: true }) });
+    toast('Service published ✓', 'success');
+    loadAdminServices();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ================================================================
+// UTILS
+// ================================================================
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ================================================================
+// BOOT
+// ================================================================
+document.addEventListener('DOMContentLoaded', boot);
 </script>
 </body>
 </html>
