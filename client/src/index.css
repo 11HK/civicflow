@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colors are stored as raw "R G B" channels so Tailwind's opacity modifiers
+   (e.g. bg-primary/15, ring-primary/25) work via rgb(var(--x) / <alpha-value>). */
+:root {
+  --bg: 246 247 249;
+  --card: 255 255 255;
+  --elevated: 240 242 245;
+  --text: 22 24 29;
+  --sub: 101 107 118;
+  --border: 228 231 236;
+  --primary: 67 97 238;
+  --primary-hover: 58 84 212;
+  --primary-light: 238 241 254;
+  --success: 18 158 94;
+  --success-light: 231 247 238;
+  --warn: 199 119 0;
+  --warn-light: 253 243 226;
+  --danger: 220 47 57;
+  --danger-light: 253 236 235;
+  --info: 36 114 214;
+  --info-light: 232 241 253;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 16px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 8px 30px rgba(16, 24, 40, 0.12);
+}
+
+html.dark {
+  --bg: 11 13 18;
+  --card: 20 23 31;
+  --elevated: 27 31 41;
+  --text: 233 235 240;
+  --sub: 144 150 163;
+  --border: 38 43 54;
+  --primary: 109 132 245;
+  --primary-hover: 128 149 247;
+  --primary-light: 26 33 64;
+  --success: 52 199 123;
+  --success-light: 15 36 24;
+  --warn: 232 161 60;
+  --warn-light: 42 32 9;
+  --danger: 240 85 95;
+  --danger-light: 42 18 20;
+  --info: 90 160 240;
+  --info-light: 15 31 54;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-text font-sans antialiased;
+  margin: 0;
+  min-height: 100vh;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection {
+  background: rgb(var(--primary));
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 8px;
+  border: 2px solid rgb(var(--bg));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--sub));
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border rounded-lg shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-DEFAULT font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-hover active:scale-[.98] px-4 py-2.5 shadow-sm;
+  }
+  .btn-outline {
+    @apply btn border border-border bg-card text-text hover:border-primary hover:text-primary px-4 py-2.5;
+  }
+  .btn-ghost {
+    @apply btn text-sub hover:text-text hover:bg-elevated px-3 py-2;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  .input {
+    @apply w-full rounded-DEFAULT border border-border bg-card px-3.5 py-2.5 text-text outline-none transition-colors focus:border-primary;
+  }
+  .input:focus {
+    box-shadow: 0 0 0 3px rgb(var(--primary) / 0.15);
+  }
+  .input::placeholder {
+    color: rgb(var(--sub));
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-sub transition-all hover:border-primary hover:text-primary cursor-pointer whitespace-nowrap;
+  }
+  .chip-active {
+    @apply border-primary bg-primary-light text-primary;
+  }
+  .section-title {
+    @apply text-[0.7rem] font-bold uppercase tracking-wider text-sub;
+  }
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--border));
+  border-radius: 8px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* React Flow theming */
+.react-flow__attribution {
+  display: none;
+}
+.react-flow__edge-path {
+  stroke: rgb(var(--border));
+  stroke-width: 2;
+}
+.react-flow__edge.completed .react-flow__edge-path {
+  stroke: rgb(var(--success));
+}
+.react-flow__edge.active .react-flow__edge-path {
+  stroke: rgb(var(--primary));
+  stroke-width: 2.5;
+}
+.react-flow__controls {
+  box-shadow: var(--shadow) !important;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--border));
+}
+.react-flow__controls-button {
+  background: rgb(var(--card)) !important;
+  border-bottom: 1px solid rgb(var(--border)) !important;
+  color: rgb(var(--text)) !important;
+  fill: rgb(var(--text)) !important;
+}
+.react-flow__controls-button:hover {
+  background: rgb(var(--elevated)) !important;
+}
